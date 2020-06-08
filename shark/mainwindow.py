@@ -1,4 +1,3 @@
-import numpy as np
 import pyglet
 import os
 from .server import Server
