@@ -50,17 +50,8 @@ def test_server():
     server.add_event(c)
     print(server.user_events)
     for i in range(40):
-        time.sleep(0.01)
-        server.update()
+        server.update(0.05)
         print(server)
-
-
-def test_server_level_start_time():
-    server = get_server()
-    t = time.time()
-    time.sleep(0.01)
-    server.start_level()
-    assert server.current_time > t
 
 
 def test_server_level_start_character():

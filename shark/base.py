@@ -15,3 +15,9 @@ def get_cells_from_shape(cell, shape):
 
 def get_cells_in_block(x_min, x_max, y_min, y_max):
     return set(Cell(x, y) for x, y in product(range(x_min, x_max), range(y_min, y_max)))
+
+
+def get_resolution(map_shape, object_size=32, overlap=0.125):
+    offset = int(2 * overlap * object_size)
+    cell_size = object_size - offset
+    return tuple((dim * cell_size) + offset for dim in map_shape)

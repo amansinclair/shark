@@ -131,13 +131,13 @@ class Level:
     def step(self, dt):
         self.time_elapsed += dt
         if self.hero.cell in self.goal:
-            return Result(won=True)
+            return Result(game_over=True, won=True)
         elif self.times_up or not self.hero.is_alive:
-            return Result(won=False)
+            return Result(game_over=True, won=False)
         else:
             self.step_characters(dt)
             self.character_cells = self.get_cell_dict(self.characters)
-        return True
+        return Result(game_over=False, characters=self.characters)
 
     def step_characters(self, dt):
         for character in self.characters:
@@ -156,8 +156,10 @@ class Level:
 
 
 class Result:
-    def __init__(self, won=False):
+    def __init__(self, game_over, won=False, characters=None):
+        self.game_over = game_over
         self.won = won
+        self.characters = characters if characters else []
 
     def __bool__(self):
-        return False
+        return self.game_over
