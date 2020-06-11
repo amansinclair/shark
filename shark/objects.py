@@ -3,7 +3,7 @@ import time
 import inspect
 import importlib
 from collections import deque, namedtuple
-from .base import Cell, get_cells_in_block, get_cells_from_shape
+from .base import Cell, get_cells_in_block, get_cells_from_shape, Action, Compass_four
 
 
 class GameObject:
@@ -15,7 +15,8 @@ class GameObject:
         self.shape = shape
         self.is_alive = is_alive
         self._cells = cells
-        self.direction = (0, -1)
+        self.action = Action.stand
+        self.direction = Compass_four[(0, -1)]
 
     @property
     def cell(self):
@@ -89,17 +90,15 @@ class MoveableObject(GameObject):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.dirty = True
         self.clear()
 
     def clear(self):
         self.goal_cell = None
         self.next_cell = None
         self.step_size = 0
-        self.direction = (0, -1)
-
-    @property
-    def is_active(self):
-        return bool(self.goal_cell)
+        self.direction = Compass_four[(0, -1)]
+        self.action = Action.stand
 
     def recenter(self):
         self.next_cell = self.cell
@@ -110,12 +109,15 @@ class MoveableObject(GameObject):
         self.next_cell = self.cell
 
     def step(self, dt, terrain, objects):
+        self.dirty = False
         if self.goal_cell:
+            self.dirty = True
             self.set_stepsize(dt, terrain)
             self.move(terrain, objects)
 
     def set_stepsize(self, dt, terrain):
         is_on_land = isinstance(terrain[self.cell], Land)
+        self.action = Action.move if is_on_land else Action.swim
         current_speed = self.land_speed if is_on_land else self.water_speed
         self.step_size = current_speed * dt
 
@@ -148,7 +150,7 @@ class MoveableObject(GameObject):
             cell = Cell(self.cell.x + dx, self.cell.y + dy)
             if self.is_free_cell(terrain[cell]) and self.is_free_cell(objects[cell]):
                 self.next_cell = cell
-                self.direction = (dx, dy)
+                self.direction = Compass_four[(dx, dy)]
                 break
 
     def is_free_cell(self, game_object=None):
@@ -192,6 +194,12 @@ class Character(MoveableObject):
             self.is_alive == False
         else:
             super().step(dt, terrain, objects)
+
+    def __lt__(self, character):
+        if self.y == character.y:
+            return self.x < character.x
+        else:
+            return self.y < character.y
 
 
 class Goodie(Character):

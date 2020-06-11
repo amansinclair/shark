@@ -15,6 +15,7 @@ class Server:
     def start_level(self):
         self.current_level = self.level_loader[self.current_level_idx]
         self.selected_character = self.current_level.hero
+        return self.current_level.terrain
 
     def add_event(self, event):
         self.user_events.append(event)
@@ -24,7 +25,7 @@ class Server:
         game_result = self.current_level.step(dt)
         if not game_result:
             self.end_level(game_result)
-        return game_result  # and state
+        return game_result  # and state REORDER OBJECTs
 
     def process_user_events(self):
         for event in self.user_events:

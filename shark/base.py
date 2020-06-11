@@ -1,5 +1,6 @@
 from itertools import product
 from collections import namedtuple
+from enum import Enum
 
 Cell = namedtuple("Cell", "x, y")
 
@@ -21,3 +22,44 @@ def get_resolution(map_shape, object_size=32, overlap=0.125):
     offset = int(2 * overlap * object_size)
     cell_size = object_size - offset
     return tuple((dim * cell_size) + offset for dim in map_shape)
+
+
+class Direction(Enum):
+    north = 0
+    south = 1
+    east = 2
+    west = 3
+    northeast = 4
+    southeast = 5
+    northwest = 6
+    southwest = 7
+
+
+class Action(Enum):
+    stand = 0
+    move = 1
+    swim = 2
+    attack = 3
+    attacked = 4
+    die = 5
+
+
+Compass_four = {
+    (0, 1): Direction.north,
+    (0, -1): Direction.south,
+    (1, 0): Direction.east,
+    (1, 1): Direction.east,
+    (1, -1): Direction.east,
+    (-1, 0): Direction.west,
+    (-1, 1): Direction.west,
+    (-1, -1): Direction.west,
+}
+
+Compass_diag = {
+    (1, 1): Direction.northeast,
+    (1, -1): Direction.southeast,
+    (-1, 1): Direction.northwest,
+    (-1, -1): Direction.southwest,
+}
+
+Compass_eight = {**Compass_four, **Compass_diag}

@@ -1,6 +1,7 @@
 import pyglet
 import os
 from .server import Server
+from .render import Renderer
 
 
 class MainWindow(pyglet.window.Window):
@@ -8,15 +9,17 @@ class MainWindow(pyglet.window.Window):
         super().__init__(W, H, fullscreen=False)
         self.app_path = app_path
         self.server = Server(self.app_path)
+        self.renderer = Renderer(self.app_path)
         self.level_running = False
         self.clicked = self.reset_click()
-        self.object_to_draw = []
+        self.objects_to_draw = []
 
     def reset_click(self):
         return (None, None)
 
     def start_game(self):
-        self.server.start_level()
+        bg = self.server.start_level()
+        self.renderer.set_bg(bg)
         self.level_running = True
         pyglet.clock.schedule_interval(self.update_game, 1 / 120.0)
 
@@ -31,14 +34,15 @@ class MainWindow(pyglet.window.Window):
 
     def on_draw(self):
         self.clear()
-        # self.renderer.render()
+        self.renderer.draw(self.objects_to_draw)
+        # render cursor?
 
     def on_close(self):
         self.close()
 
     def update_game(self, dt):
         update_result = self.server.update(dt)
-        self.object_to_draw = update_result.characters
+        self.objects_to_draw = update_result.characters
 
     def run(self):
         pyglet.app.run()

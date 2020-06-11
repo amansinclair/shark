@@ -1,4 +1,14 @@
-from shark.base import Cell, get_cells_from_shape, get_cells_in_block, get_resolution
+from itertools import product
+
+from shark.base import (
+    Cell,
+    get_cells_from_shape,
+    get_cells_in_block,
+    get_resolution,
+    Direction,
+    Compass_eight,
+    Compass_four,
+)
 
 
 def get_unit_cell():
@@ -60,3 +70,26 @@ def test_overlap_res():
     assert (ans, ans) == get_resolution(
         (dim, dim), object_size=object_size, overlap=overlap
     )
+
+
+def get_eight_displacements():
+    ds = set((x, y) for x, y in product(range(-1, 2), range(-1, 2)))
+    ds.remove((0, 0))
+    return ds
+
+
+def test_compass_eight_keys():
+    keys = set(Compass_eight.keys())
+    ds = get_eight_displacements()
+    assert keys == ds
+
+
+def test_compass_four_keys():
+    keys = set(Compass_four.keys())
+    ds = get_eight_displacements()
+    assert keys == ds
+
+
+def test_compass_eight():
+    for d in Direction:
+        assert d in Compass_eight.values()
