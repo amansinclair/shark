@@ -1,5 +1,5 @@
 from pathlib import Path
-from .mainwindow import App
+from .app import App
 
 
 def run():

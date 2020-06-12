@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 class App(pyglet.window.Window):
-    def __init__(self, app_path, H=776, W=680):
+    def __init__(self, app_path, H=480, W=480):
         super().__init__(W, H, fullscreen=False)
         self.app_path = app_path
         self.renderer = Renderer(app_path)

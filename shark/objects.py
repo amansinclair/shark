@@ -194,6 +194,11 @@ class Character(MoveableObject):
         else:
             super().step(dt, terrain, objects)
 
+    def is_free_cell(self, game_object=None):
+        if game_object and isinstance(game_object, UnPassableTerrain):
+            return False
+        return True
+
     def __lt__(self, character):
         if self.y == character.y:
             return self.x < character.x

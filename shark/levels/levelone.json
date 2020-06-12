@@ -6,6 +6,8 @@
     ["Land", { "name": "Land", "x": 0, "y": 0 }],
     ["Land", { "name": "Land", "x": 1, "y": 0 }],
     ["Land", { "name": "Land", "x": 0, "y": 1 }],
+    ["Land", { "name": "Land", "x": 1, "y": 1 }],
+    ["Land", { "name": "Land", "x": 2, "y": 2 }],
     ["Land", { "name": "Land", "x": 19, "y": 19 }],
     ["Land", { "name": "Land", "x": 5, "y": 5 }],
     ["Land", { "name": "Land", "x": 5, "y": 6 }],
@@ -14,7 +16,14 @@
     ["Land", { "name": "Land", "x": 7, "y": 7 }],
     ["Land", { "name": "Land", "x": 7, "y": 6 }],
     ["Land", { "name": "Land", "x": 6, "y": 7 }],
-    ["Land", { "name": "Land", "x": 7, "y": 5 }]
+    ["UnPassableTerrain", { "name": "UnPassableTerrain", "x": 10, "y": 10 }],
+    ["UnPassableTerrain", { "name": "UnPassableTerrain", "x": 10, "y": 11 }],
+    ["UnPassableTerrain", { "name": "UnPassableTerrain", "x": 11, "y": 10 }],
+    ["UnPassableTerrain", { "name": "UnPassableTerrain", "x": 9, "y": 9 }],
+    ["UnPassableTerrain", { "name": "UnPassableTerrain", "x": 11, "y": 11 }],
+    ["UnPassableTerrain", { "name": "UnPassableTerrain", "x": 9, "y": 10 }],
+    ["UnPassableTerrain", { "name": "UnPassableTerrain", "x": 12, "y": 11 }],
+    ["UnPassableTerrain", { "name": "UnPassableTerrain", "x": 13, "y": 11 }]
   ],
   "game_objects": [
     ["Goal", { "name": "Goal", "x": 19, "y": 19 }],
