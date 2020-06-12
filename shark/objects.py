@@ -3,14 +3,7 @@ import time
 import inspect
 import importlib
 from collections import deque, namedtuple
-from .base import (
-    Cell,
-    get_cells_in_block,
-    get_cells_from_shape,
-    Action,
-    Compass_four,
-    Direction,
-)
+from .base import Cell, get_cells_in_block, Action, Compass_four, Direction
 
 
 class GameObject:
@@ -73,7 +66,7 @@ class MoveableObject(GameObject):
     """Class that supports movement."""
 
     water_speed = 1
-    land_speed = 1
+    land_speed = 2
     angle = math.cos(math.pi / 4)
     displacement_prefs = {
         (1, 0): [(1, 0), (1, 1), (1, -1)],
@@ -182,7 +175,7 @@ class MoveableObject(GameObject):
         else:
             dy_actual = self.next_cell.y - self.y
             self.y = self.next_cell.y
-        self.step_size -= dx_actual + dy_actual
+        self.step_size -= abs(dx_actual) + abs(dy_actual)
 
 
 class Character(MoveableObject):

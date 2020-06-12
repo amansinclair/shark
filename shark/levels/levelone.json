@@ -6,10 +6,18 @@
     ["Land", { "name": "Land", "x": 0, "y": 0 }],
     ["Land", { "name": "Land", "x": 1, "y": 0 }],
     ["Land", { "name": "Land", "x": 0, "y": 1 }],
-    ["Land", { "name": "Land", "x": 19, "y": 19 }]
+    ["Land", { "name": "Land", "x": 19, "y": 19 }],
+    ["Land", { "name": "Land", "x": 5, "y": 5 }],
+    ["Land", { "name": "Land", "x": 5, "y": 6 }],
+    ["Land", { "name": "Land", "x": 6, "y": 6 }],
+    ["Land", { "name": "Land", "x": 6, "y": 5 }],
+    ["Land", { "name": "Land", "x": 7, "y": 7 }],
+    ["Land", { "name": "Land", "x": 7, "y": 6 }],
+    ["Land", { "name": "Land", "x": 6, "y": 7 }],
+    ["Land", { "name": "Land", "x": 7, "y": 5 }]
   ],
   "game_objects": [
-    ["Goal", { "name": "Goal", "x": 3, "y": 3 }],
+    ["Goal", { "name": "Goal", "x": 19, "y": 19 }],
     ["Hero", { "name": "Hero", "x": 1, "y": 1 }]
   ]
 }

@@ -2,7 +2,7 @@ from itertools import product
 
 from shark.base import (
     Cell,
-    get_cells_from_shape,
+    get_surrounding_cells,
     get_cells_in_block,
     get_resolution,
     Direction,
@@ -41,17 +41,16 @@ def test_cells_in_block():
     assert len(cells) == x_max * y_max
 
 
-def test_get_cells_from_big_shape():
+def test_get_surrounding_cells_free_zone():
     cell = get_unit_cell()
-    shape = (100, 100)
-    block_of_cells = get_cells_from_shape(cell, shape)
+    block_of_cells = get_surrounding_cells(cell)
     assert len(block_of_cells) == 9
 
 
-def test_get_cells_from_small_shape():
+def test_get_surrounding_cells_corner():
     cell = get_unit_cell()
-    shape = (2, 2)
-    block_of_cells = get_cells_from_shape(cell, shape)
+    map_shape = (2, 2)
+    block_of_cells = get_surrounding_cells(cell, bounds=map_shape)
     assert len(block_of_cells) == 4
 
 

@@ -5,12 +5,13 @@ from enum import Enum
 Cell = namedtuple("Cell", "x, y")
 
 
-def get_cells_from_shape(cell, shape):
+def get_surrounding_cells(cell, shape=(1, 1), bounds=(20, 20)):
     cell_x, cell_y = cell
+    bound_x, bound_y = bounds
     x_min = max(0, cell_x - 1)
-    x_max = min(cell_x + 2, shape[1])
+    x_max = min(cell_x + shape[1] + 1, bound_x)
     y_min = max(0, cell_y - 1)
-    y_max = min(cell_y + 2, shape[0])
+    y_max = min(cell_y + shape[1] + 1, bound_y)
     return get_cells_in_block(x_min, x_max, y_min, y_max)
 
 

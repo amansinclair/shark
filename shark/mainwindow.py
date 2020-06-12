@@ -1,17 +1,21 @@
 import pyglet
 import os
-from .server import Server
+import math
+from .level import LevelLoader
 from .render import Renderer
 from .base import Cell
 from pathlib import Path
 
 
-class MainWindow(pyglet.window.Window):
+class App(pyglet.window.Window):
     def __init__(self, app_path, H=776, W=680):
         super().__init__(W, H, fullscreen=False)
         self.app_path = app_path
-        self.server = Server(self.app_path)
-        self.renderer = Renderer(self.app_path)
+        self.renderer = Renderer(app_path)
+        self.level_loader = LevelLoader(app_path)
+        self.current_level_idx = 0
+        self.current_level = None
+        self.selected_character = None
         self.level_running = False
         self.clicked = self.reset_click()
         self.objects_to_draw = []
@@ -21,20 +25,21 @@ class MainWindow(pyglet.window.Window):
         return (None, None)
 
     def start_game(self):
-        terrain_objects = self.server.start_level()
-        self.renderer.set_bg(terrain_objects)
+        self.current_level = self.level_loader[self.current_level_idx]
+        self.selected_character = self.current_level.hero
+        self.renderer.start_level(self.current_level.terrain)
         self.level_running = True
         pyglet.clock.schedule_interval(self.update_game, 1 / 120.0)
 
     def on_mouse_press(self, x, y, button, modifiers):
         if button == pyglet.window.mouse.LEFT:
-            x = x // 24
-            y = y // 24
+            x = math.floor(x / 24)
+            y = math.floor(y / 24)
             self.clicked = Cell(x, y)
 
     def on_mouse_release(self, x, y, button, modifiers):
         if button == pyglet.window.mouse.LEFT:
-            self.server.add_event(self.clicked)
+            self.current_level.update(self.selected_character, self.clicked)
             self.clicked = self.reset_click()
 
     def on_draw(self):
@@ -46,8 +51,17 @@ class MainWindow(pyglet.window.Window):
         self.close()
 
     def update_game(self, dt):
-        update_result = self.server.update(dt)
-        self.objects_to_draw = update_result.characters
+        game_status = self.current_level.step(dt)
+        if game_status:
+            self.end_level(game_status)
+        self.objects_to_draw = game_status.characters
+
+    def end_level(self, game_status):
+        if game_status.won:
+            self.current_level_idx += 1
 
     def run(self):
         pyglet.app.run()
+
+    def __repr__(self):
+        return f"Shark(Level: {self.current_level})"

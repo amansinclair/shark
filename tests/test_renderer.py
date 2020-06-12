@@ -18,4 +18,5 @@ def test_image_loader_return_type():
     loader = get_image_loader()
     key = get_key("Water", Action.stand, Direction.south)
     img = loader[key]
-    assert (isinstance(img, ImageData) or isinstance(img, Animation)
+    assert isinstance(img, ImageData) or isinstance(img, Animation)
+

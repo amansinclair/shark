@@ -82,23 +82,18 @@ class Renderer:
         self.cell_size = cell_size
         self.offset = cell_size // 2
         self.imgs = ImageLoader(app_path)
-        self.reset()
 
-    def reset(self):
+    def start_level(self, terrain_objects=None):
         self.previous_imgs = {}
         self.sprites = {}
-        self.bg = self.set_bg()
-
-    def set_bg(self, terrain_objects=None):
-        bg = pyglet.graphics.Batch()
+        self.bg = pyglet.graphics.Batch()
         if terrain_objects:
             for terrain_object in terrain_objects:
                 x, y = self.convert_coords(terrain_object)
                 img = self.get_img(terrain_object)
                 self.sprites[terrain_object] = pyglet.sprite.Sprite(
-                    img=img, x=x, y=y, batch=bg
+                    img=img, x=x, y=y, batch=self.bg
                 )
-        return bg
 
     def get_img(self, game_object):
         key = get_key(game_object.name, game_object.action, game_object.direction)
@@ -106,16 +101,14 @@ class Renderer:
 
     def draw(self, game_objects):
         self.bg.draw()
-        for sprite in self.sprites.values():
-            sprite.draw()
         for game_object in game_objects:  # sort
             sprite = self.get_sprite(game_object)
             sprite.draw()
         # self.hud.draw() LATER
 
     def get_sprite(self, game_object):
-        x, y = self.convert_coords(game_object)
         img = self.get_img(game_object)
+        x, y = self.convert_coords(game_object)
         if game_object in self.previous_imgs and img == self.previous_imgs[game_object]:
             sprite = self.move_sprite(game_object, x, y)
         else:
@@ -138,12 +131,15 @@ class Renderer:
         x = game_object.x
         y = game_object.y
         if isinstance(game_object, Character):
-            return (self.convert_character_coord(x), self.convert_character_coord(y))
+            return (self.convert_character_x(x), self.convert_character_y(y))
         else:
             return (self.convert_terrain_coord(x), self.convert_terrain_coord(y))
 
-    def convert_character_coord(self, x):
-        return int(x * self.cell_size) + self.offset
+    def convert_character_x(self, x):
+        return int((x + 0.5) * self.cell_size) - 16
+
+    def convert_character_y(self, y):
+        return int((y * self.cell_size)) + 8
 
     def convert_terrain_coord(self, x):
         return int(x * self.cell_size)

@@ -14,7 +14,7 @@ from .objects import (
     all_objects,
     GameObject,
 )
-from .base import get_cells_from_shape, get_cells_in_block
+from .base import get_surrounding_cells, get_cells_in_block, Cell
 
 
 class LevelLoader:
@@ -149,8 +149,9 @@ class Level:
     def step_characters(self, dt):
         for character in self.characters:
             if character.is_active:
-                n_rows, n_cols = character.shape
-                cells = get_cells_from_shape(character.cell, (n_rows + 1, n_cols + 1))
+                cells = get_surrounding_cells(
+                    character.cell, character.shape, self.shape
+                )
                 terrain = self.get_surrounding_objects(cells, self.terrain_cells)
                 objects = self.get_surrounding_objects(cells, self.character_cells)
                 character.step(dt, terrain, objects)

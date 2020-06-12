@@ -1,9 +1,9 @@
 from pathlib import Path
-from .mainwindow import MainWindow
+from .mainwindow import App
 
 
 def run():
-    game = MainWindow(Path.cwd())
+    game = App(Path.cwd())
     game.run()
 
 
