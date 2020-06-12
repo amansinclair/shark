@@ -1,0 +1,78 @@
+{
+  "filename": "MoveableObject.png",
+  "name": "Hero",
+  "n_rows": 10,
+  "n_cols": 2,
+  "animations": [
+    {
+      "action": "stand",
+      "direction": "south",
+      "length": 2,
+      "loop": true,
+      "dt": 0.5
+    },
+    {
+      "action": "tread_water",
+      "direction": "south",
+      "length": 2,
+      "loop": true,
+      "dt": 0.5
+    },
+    {
+      "action": "walk",
+      "direction": "north",
+      "length": 2,
+      "loop": true,
+      "dt": 0.5
+    },
+    {
+      "action": "walk",
+      "direction": "south",
+      "length": 2,
+      "loop": true,
+      "dt": 0.5
+    },
+    {
+      "action": "walk",
+      "direction": "east",
+      "length": 2,
+      "loop": true,
+      "dt": 0.5
+    },
+    {
+      "action": "walk",
+      "direction": "west",
+      "length": 2,
+      "loop": true,
+      "dt": 0.5
+    },
+    {
+      "action": "swim",
+      "direction": "north",
+      "length": 2,
+      "loop": true,
+      "dt": 0.5
+    },
+    {
+      "action": "swim",
+      "direction": "south",
+      "length": 2,
+      "loop": true,
+      "dt": 0.5
+    },
+    {
+      "action": "swim",
+      "direction": "east",
+      "length": 2,
+      "loop": true,
+      "dt": 0.5
+    },
+    {
+      "action": "swim",
+      "direction": "west",
+      "length": 2,
+      "loop": true,
+      "dt": 0.5
+    }
+  ]
+}

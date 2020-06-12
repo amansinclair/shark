@@ -4,8 +4,7 @@ from collections import defaultdict
 
 from shark.objects import Hero, Goal, GameObject, MoveableObject
 from shark.level import LevelLoader, Level
-from shark.server import Server
-from shark.base import Cell
+from shark.base import Cell, get_cells_in_block
 
 
 def test_loader_loads_specs():
@@ -36,46 +35,9 @@ def test_level_has_goal():
     assert isinstance(level.goal, Goal)
 
 
-def get_server():
-    cwd = Path.cwd()
-    server = Server(cwd)
-    return server
-
-
-def test_server():
-    server = get_server()
-    server.start_level()
-    print(server)
-    c = Cell(3, 3)
-    server.add_event(c)
-    print(server.user_events)
-    for i in range(40):
-        server.update(0.05)
-        print(server)
-
-
-def test_server_level_start_character():
-    server = get_server()
-    server.start_level()
-    assert isinstance(server.selected_character, Hero)
-
-
-def get_mover():
-    return MoveableObject(x=0, y=0)
-
-
-def test_movement_index():
-    mover = get_mover()
-    pos = (-0.4, 0.0, 1.0, 5.4)
-    ans = (-1, 0, 1, 1)
-    for pos, ans in zip(pos, ans):
-        assert mover.convert_to_index(pos) == ans
-
-
-def test_movement_goals():
-    mover = get_mover()
-    mover.move_to(Cell(2, 3))
-    t = defaultdict(GameObject)
-    o = defaultdict(GameObject)
-    mover.choose_next_cell(t, o)
-    assert mover.next_cell == (1, 1)
+def test_level_is_filled():
+    level = get_level()
+    n_rows, n_cols = level.shape
+    all_cells = get_cells_in_block(0, n_cols, 0, n_rows)
+    terrain_cells = set(level.terrain_cells.keys())
+    assert all_cells == terrain_cells

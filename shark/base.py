@@ -37,11 +37,12 @@ class Direction(Enum):
 
 class Action(Enum):
     stand = 0
-    move = 1
-    swim = 2
-    attack = 3
-    attacked = 4
-    die = 5
+    tread_water = 1
+    walk = 2
+    swim = 3
+    attack = 4
+    attacked = 5
+    die = 6
 
 
 Compass_four = {

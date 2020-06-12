@@ -18,7 +18,7 @@ def test_object_cell():
 
 
 def test_object_contains():
-    obj = GameObject(x=0, y=0, cells=((0, 0), (1, 1)))
+    obj = GameObject(x=0, y=0, shape=(2, 2))
     assert (1, 1) in obj
 
 

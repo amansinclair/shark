@@ -9,11 +9,12 @@ from .objects import (
     Goodie,
     Baddie,
     Terrain,
+    Water,
     Character,
     all_objects,
     GameObject,
 )
-from .base import get_cells_from_shape
+from .base import get_cells_from_shape, get_cells_in_block
 
 
 class LevelLoader:
@@ -75,7 +76,13 @@ class Level:
         return f"Level(name: {self.name}, shape: {self.shape}, time: {self.time_elapsed:.1f} / {self.time_limit})"
 
     def build_terrain(self, terrain):
-        return self.spawn_objects(terrain)
+        terrain_objects = self.spawn_objects(terrain)
+        all_cells = get_cells_in_block(0, self.shape[1], 0, self.shape[0])
+        taken_cells = set(terrain_object.cell for terrain_object in terrain_objects)
+        free_cells = all_cells.difference(taken_cells)
+        for free_cell in free_cells:
+            terrain_objects.append(Water(name="Water", x=free_cell.x, y=free_cell.y))
+        return terrain_objects
 
     def build_game_objects(self, game_objects):
         spawned_objects = self.spawn_objects(game_objects)

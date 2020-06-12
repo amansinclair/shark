@@ -3,20 +3,26 @@ import time
 import inspect
 import importlib
 from collections import deque, namedtuple
-from .base import Cell, get_cells_in_block, get_cells_from_shape, Action, Compass_four
+from .base import (
+    Cell,
+    get_cells_in_block,
+    get_cells_from_shape,
+    Action,
+    Compass_four,
+    Direction,
+)
 
 
 class GameObject:
     """Base class for all game objects."""
 
-    def __init__(self, x=0.0, y=0.0, shape=(1, 1), cells=None, is_alive=True):
+    def __init__(self, name=None, x=0.0, y=0.0, shape=(1, 1)):
+        self.name = name
         self.x = x
         self.y = y
         self.shape = shape
-        self.is_alive = is_alive
-        self._cells = cells
         self.action = Action.stand
-        self.direction = Compass_four[(0, -1)]
+        self.direction = Direction.south
 
     @property
     def cell(self):
@@ -24,20 +30,20 @@ class GameObject:
 
     @property
     def cells(self):
-        if self._cells:
-            return set([Cell(self.x + x, self.y + y) for x, y in self._cells])
-        else:
+        if self.shape != (1, 1):
             cell_x, cell_y = self.cell
             max_x = cell_x + self.shape[1]
             max_y = cell_y + self.shape[0]
             return get_cells_in_block(cell_x, max_x, cell_y, max_y)
+        else:
+            return set([self.cell])
 
     def __contains__(self, cell):
         return cell in self.cells
 
     def __repr__(self):
         cls = self.__class__.__name__
-        return f"{cls}(x: {self.x:.1f}, y: {self.y:.1f}, is alive: {self.is_alive})"
+        return f"{cls}(name: {self.name}, x: {self.x:.1f}, y: {self.y:.1f})"
 
     def step(self, dt, terrain, objects):
         pass
@@ -45,8 +51,6 @@ class GameObject:
 
 class Terrain(GameObject):
     """Base class for regions of a level."""
-
-    pass
 
 
 class Water(Terrain):
@@ -56,28 +60,22 @@ class Water(Terrain):
 class Land(Terrain):
     """A land region passable only to Goodies."""
 
-    pass
-
 
 class UnPassableTerrain(Terrain):
     """A region unpassable to all Characters."""
-
-    pass
 
 
 class Goal(GameObject):
     """A point that defines where the Hero must go!."""
 
-    pass
-
 
 class MoveableObject(GameObject):
     """Class that supports movement."""
 
-    water_speed = 10
-    land_speed = 10
+    water_speed = 1
+    land_speed = 1
     angle = math.cos(math.pi / 4)
-    best_directions = {
+    displacement_prefs = {
         (1, 0): [(1, 0), (1, 1), (1, -1)],
         (1, -1): [(1, -1), (1, 0), (0, -1)],
         (0, -1): [(0, -1), (1, -1), (-1, -1)],
@@ -88,17 +86,23 @@ class MoveableObject(GameObject):
         (1, 1): [(1, 1), (0, 1), (1, 0)],
     }
 
-    def __init__(self, **kwargs):
+    def __init__(self, is_on_land=True, **kwargs):
         super().__init__(**kwargs)
         self.dirty = True
+        self.is_on_land = is_on_land
         self.clear()
+
+    @property
+    def is_active(self):
+        return bool(self.goal_cell)
 
     def clear(self):
         self.goal_cell = None
         self.next_cell = None
+        self.next_displacement = None
         self.step_size = 0
-        self.direction = Compass_four[(0, -1)]
-        self.action = Action.stand
+        self.direction = Direction.south
+        self.action = Action.stand if self.is_on_land else Action.tread_water
 
     def recenter(self):
         self.next_cell = self.cell
@@ -116,9 +120,9 @@ class MoveableObject(GameObject):
             self.move(terrain, objects)
 
     def set_stepsize(self, dt, terrain):
-        is_on_land = isinstance(terrain[self.cell], Land)
-        self.action = Action.move if is_on_land else Action.swim
-        current_speed = self.land_speed if is_on_land else self.water_speed
+        self.is_on_land = isinstance(terrain[self.cell], Land)
+        self.action = Action.walk if self.is_on_land else Action.swim
+        current_speed = self.land_speed if self.is_on_land else self.water_speed
         self.step_size = current_speed * dt
 
     def move(self, terrain, objects):
@@ -141,15 +145,16 @@ class MoveableObject(GameObject):
         dx = self.goal_cell.x - self.cell.x
         dy = self.goal_cell.y - self.cell.y
         index = (self.convert_to_index(dx), self.convert_to_index(dy))
-        best_directions = self.best_directions[index]
-        self.set_next_cell(best_directions, terrain, objects)
+        displacement_prefs = self.displacement_prefs[index]
+        self.set_next_cell(displacement_prefs, terrain, objects)
 
-    def set_next_cell(self, best_directions, terrain, objects):
+    def set_next_cell(self, displacement_prefs, terrain, objects):
         self.next_cell = None
-        for dx, dy in best_directions:
+        for dx, dy in displacement_prefs:
             cell = Cell(self.cell.x + dx, self.cell.y + dy)
             if self.is_free_cell(terrain[cell]) and self.is_free_cell(objects[cell]):
                 self.next_cell = cell
+                self.next_displacement = (dx, dy)
                 self.direction = Compass_four[(dx, dy)]
                 break
 
@@ -158,7 +163,7 @@ class MoveableObject(GameObject):
         return True
 
     def take_step(self):
-        sx, sy = self.direction
+        sx, sy = self.next_displacement
         step_size = self.step_size * self.angle if sx and sy else self.step_size
         self.update_position(sx * step_size, sy * step_size)
 
@@ -187,6 +192,7 @@ class Character(MoveableObject):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.is_alive = True
         self.current_health = self.max_health
 
     def step(self, dt, terrain, objects):

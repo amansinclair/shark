@@ -2,6 +2,8 @@ import pyglet
 import os
 from .server import Server
 from .render import Renderer
+from .base import Cell
+from pathlib import Path
 
 
 class MainWindow(pyglet.window.Window):
@@ -13,19 +15,22 @@ class MainWindow(pyglet.window.Window):
         self.level_running = False
         self.clicked = self.reset_click()
         self.objects_to_draw = []
+        self.start_game()
 
     def reset_click(self):
         return (None, None)
 
     def start_game(self):
-        bg = self.server.start_level()
-        self.renderer.set_bg(bg)
+        terrain_objects = self.server.start_level()
+        self.renderer.set_bg(terrain_objects)
         self.level_running = True
         pyglet.clock.schedule_interval(self.update_game, 1 / 120.0)
 
     def on_mouse_press(self, x, y, button, modifiers):
         if button == pyglet.window.mouse.LEFT:
-            self.clicked = (x, y)
+            x = x // 24
+            y = y // 24
+            self.clicked = Cell(x, y)
 
     def on_mouse_release(self, x, y, button, modifiers):
         if button == pyglet.window.mouse.LEFT:

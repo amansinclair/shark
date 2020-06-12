@@ -1,4 +1,5 @@
 from .level import LevelLoader
+from .base import Cell
 
 
 class Server:
@@ -23,7 +24,7 @@ class Server:
     def update(self, dt):
         self.process_user_events()
         game_result = self.current_level.step(dt)
-        if not game_result:
+        if game_result:
             self.end_level(game_result)
         return game_result  # and state REORDER OBJECTs
 
