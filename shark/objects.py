@@ -102,8 +102,9 @@ class MoveableObject(GameObject):
         self.goal_cell = self.cell
 
     def move_to(self, cell):
+        if not self.goal_cell:
+            self.next_cell = self.cell
         self.goal_cell = cell
-        self.next_cell = self.cell
 
     def step(self, dt, terrain, objects):
         self.dirty = False
@@ -145,13 +146,13 @@ class MoveableObject(GameObject):
         self.next_cell = None
         for dx, dy in displacement_prefs:
             cell = Cell(self.cell.x + dx, self.cell.y + dy)
-            if self.is_free_cell(terrain[cell]) and self.is_free_cell(objects[cell]):
+            if self.is_free_cell(cell, terrain, objects):
                 self.next_cell = cell
                 self.next_displacement = (dx, dy)
                 self.direction = Compass_four[(dx, dy)]
                 break
 
-    def is_free_cell(self, game_object=None):
+    def is_free_cell(self, cell, terrain, objects):
         """To be implemented by subclasses."""
         return True
 
@@ -185,19 +186,21 @@ class Character(MoveableObject):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.is_alive = True
         self.current_health = self.max_health
 
+    @property
+    def is_alive(self):
+        return bool(self.current_health > 0)
+
     def step(self, dt, terrain, objects):
-        if self.current_health <= 0:
-            self.is_alive == False
-        else:
+        if self.is_alive:
             super().step(dt, terrain, objects)
 
-    def is_free_cell(self, game_object=None):
-        if game_object and isinstance(game_object, UnPassableTerrain):
-            return False
-        return True
+    def take_damage(self, damage):
+        if self.is_alive:
+            self.current_health -= damage
+            self.action = Action.attacked if self.is_alive else Action.die
+            self.dirty = True
 
     def __lt__(self, character):
         if self.y == character.y:
@@ -207,7 +210,14 @@ class Character(MoveableObject):
 
 
 class Goodie(Character):
-    pass
+    """Character that needs to reach goal."""
+
+    def is_free_cell(self, cell, terrain, objects):
+        if isinstance(terrain[cell], UnPassableTerrain) or isinstance(
+            objects[cell], Goodie
+        ):
+            return False
+        return True
 
 
 class Hero(Goodie):
@@ -217,12 +227,33 @@ class Hero(Goodie):
 class Baddie(Character):
     """Character that can do damage to Goodies."""
 
-    max_damage = 35
-
 
 class Shark(Baddie):
-    def __init__(self):
-        self.previous_cells = deque(3)
+    land_speed = 0
+    water_speed = 2
+    damage = 10
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.action = Action.swim
+        self.previous_cells = deque(maxlen=6)
+
+    def step(self, dt, terrain, objects):
+        if self.is_alive:
+            super().step(dt, terrain, objects)
+            goodie_in_cell = objects[self.cell]
+            if goodie_in_cell:
+                self.attack(goodie_in_cell, dt)
+
+    def attack(self, goodie, dt):
+        damage = self.damage * dt
+        self.action = Action.attack
+        goodie.take_damage(damage)
+
+    def is_free_cell(self, cell, terrain, objects):
+        if isinstance(terrain[cell], Land) or cell in self.previous_cells:
+            return False
+        return True
 
 
 all_classes = inspect.getmembers(importlib.import_module(__name__), inspect.isclass)

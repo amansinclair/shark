@@ -32,6 +32,11 @@ def test_cell_get():
     assert cell.y == 1
 
 
+def test_cell_equals_tuple():
+    cell = get_unit_cell()
+    assert cell == (1, 1)
+
+
 def test_cells_in_block():
     x_min = 0
     x_max = 2
