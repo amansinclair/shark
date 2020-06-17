@@ -3,7 +3,7 @@ import os
 import math
 from .level import LevelLoader
 from .render import Renderer
-from .base import Cell
+from .base import Cell, Timer
 from pathlib import Path
 
 
@@ -17,6 +17,7 @@ class App(pyglet.window.Window):
         self.current_level = None
         self.selected_character = None
         self.level_running = False
+        self.timer = None
         self.clicked = self.reset_click()
         self.objects_to_draw = []
         self.start_game()
@@ -27,8 +28,10 @@ class App(pyglet.window.Window):
     def start_game(self):
         self.current_level = self.level_loader[self.current_level_idx]
         self.selected_character = self.current_level.hero
+        # pass baddies to ai
         self.renderer.start_level(self.current_level.terrain)
         self.level_running = True
+        self.timer = Timer(0.5)
         pyglet.clock.schedule_interval(self.update_game, 1 / 120.0)
 
     def on_mouse_press(self, x, y, button, modifiers):
@@ -45,12 +48,13 @@ class App(pyglet.window.Window):
     def on_draw(self):
         self.clear()
         self.renderer.draw(self.objects_to_draw)
-        # render cursor?
 
     def on_close(self):
         self.close()
 
     def update_game(self, dt):
+        if self.timer(dt):
+            pass  # update_ai
         game_status = self.current_level.step(dt)
         if game_status:
             self.end_level(game_status)

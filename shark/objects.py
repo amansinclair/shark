@@ -3,7 +3,14 @@ import time
 import inspect
 import importlib
 from collections import deque, namedtuple
-from .base import Cell, get_cells_in_block, Action, Compass_four, Direction
+from .base import (
+    Cell,
+    get_cells_in_block,
+    Action,
+    Compass_four,
+    Direction,
+    get_surrounding_cells,
+)
 
 
 class GameObject:
@@ -183,6 +190,7 @@ class Character(MoveableObject):
     """Class that has health and supports movement."""
 
     max_health = 100
+    visible_distance = 2
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

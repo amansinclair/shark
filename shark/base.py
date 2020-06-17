@@ -5,13 +5,13 @@ from enum import Enum
 Cell = namedtuple("Cell", "x, y")
 
 
-def get_surrounding_cells(cell, shape=(1, 1), bounds=(20, 20)):
+def get_surrounding_cells(cell, shape=(1, 1), bounds=(20, 20), thickness=1):
     cell_x, cell_y = cell
     bound_x, bound_y = bounds
-    x_min = max(0, cell_x - 1)
-    x_max = min(cell_x + shape[1] + 1, bound_x)
-    y_min = max(0, cell_y - 1)
-    y_max = min(cell_y + shape[1] + 1, bound_y)
+    x_min = max(0, cell_x - thickness)
+    x_max = min(cell_x + shape[1] + thickness, bound_x)
+    y_min = max(0, cell_y - thickness)
+    y_max = min(cell_y + shape[1] + thickness, bound_y)
     return get_cells_in_block(x_min, x_max, y_min, y_max)
 
 
@@ -65,3 +65,17 @@ Compass_diag = {
 }
 
 Compass_eight = {**Compass_four, **Compass_diag}
+
+
+class Timer:
+    def __init__(self, interval):
+        self.interval = interval
+        self.next_interval = self.interval
+        self.total = 0
+
+    def __call__(self, dt):
+        self.total = round(self.total + dt, ndigits=5)
+        if self.total >= self.next_interval:
+            self.next_interval += self.interval
+            return True
+        return False

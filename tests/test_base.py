@@ -8,6 +8,7 @@ from shark.base import (
     Direction,
     Compass_eight,
     Compass_four,
+    Timer,
 )
 
 
@@ -97,3 +98,14 @@ def test_compass_four_keys():
 def test_compass_eight():
     for d in Direction:
         assert d in Compass_eight.values()
+
+
+def test_timer():
+    interval = 0.5
+    dt = 0.11
+    timer = Timer(interval)
+    total = 0
+    n_iter = 100000
+    for i in range(n_iter):
+        total += int(timer(dt))
+    assert int((dt * n_iter) / interval) == total
