@@ -27,6 +27,7 @@
   ],
   "game_objects": [
     ["Goal", { "name": "Goal", "x": 19, "y": 19 }],
+    ["Shark", { "name": "Shark", "x": 17, "y": 17 }],
     ["Hero", { "name": "Hero", "x": 1, "y": 1 }]
   ]
 }

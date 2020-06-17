@@ -1,7 +1,7 @@
 {
-  "filename": "MoveableObject.png",
-  "name": "Hero",
-  "n_rows": 10,
+  "filename": "Shark.png",
+  "name": "Shark",
+  "n_rows": 8,
   "n_cols": 2,
   "animations": [
     {
@@ -33,43 +33,29 @@
       "dt": 0.5
     },
     {
-      "action": "walk",
+      "action": "attack",
       "direction": "west",
       "length": 2,
       "loop": true,
       "dt": 0.5
     },
     {
-      "action": "walk",
+      "action": "attack",
       "direction": "east",
       "length": 2,
       "loop": true,
       "dt": 0.5
     },
     {
-      "action": "walk",
+      "action": "attack",
       "direction": "south",
       "length": 2,
       "loop": true,
       "dt": 0.5
     },
     {
-      "action": "walk",
+      "action": "attack",
       "direction": "north",
-      "length": 2,
-      "loop": true,
-      "dt": 0.5
-    },
-    {
-      "action": "tread_water",
-      "direction": "south",
-      "length": 2,
-      "loop": true,
-      "dt": 0.5
-    },
-    {
-      "action": "stand",
-      "direction": "south",
       "length": 2,
       "loop": true,
       "dt": 0.5

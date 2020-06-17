@@ -13,6 +13,7 @@ from .objects import (
     Character,
     all_objects,
     GameObject,
+    Surrounds,
 )
 from .base import get_surrounding_cells, get_cells_in_block, Cell
 
@@ -70,7 +71,8 @@ class Level:
         self.baddies = []
         self.characters = []
         self.build_game_objects(game_objects)
-        self.character_cells = self.get_cell_dict(self.characters)
+        self.goodie_cells = self.get_cell_dict(self.goodies)
+        self.baddie_cells = self.get_cell_dict(self.baddies)
 
     def __repr__(self):
         return f"Level(name: {self.name}, shape: {self.shape}, time: {self.time_elapsed:.1f} / {self.time_limit})"
@@ -125,14 +127,14 @@ class Level:
         return bool(self.hero.is_alive and not self.times_up)
 
     def update(self, selected_goodie, cell):
-        if cell in self.character_cells:
-            character = self.character_cells[cell]
+        if cell in self.goodie_cells:
+            character = self.goodie_cells[cell]
             self.check_for_follow(selected_goodie, character)
         else:
             selected_goodie.move_to(cell)
 
     def check_for_follow(self, selected_goodie, character):
-        if character in self.goodies and character != selected_goodie:
+        if character != selected_goodie:
             pass  # setup following
 
     def step(self, dt):
@@ -143,7 +145,8 @@ class Level:
             return Result(game_over=True, won=False)
         else:
             self.step_characters(dt)
-            self.character_cells = self.get_cell_dict(self.characters)
+            self.goodie_cells = self.get_cell_dict(self.goodies)
+            self.baddie_cells = self.get_cell_dict(self.baddies)
         return Result(game_over=False, characters=self.characters)
 
     def step_characters(self, dt):
@@ -153,8 +156,9 @@ class Level:
                     character.cell, character.shape, self.shape
                 )
                 terrain = self.get_surrounding_objects(cells, self.terrain_cells)
-                objects = self.get_surrounding_objects(cells, self.character_cells)
-                character.step(dt, terrain, objects)
+                goodies = self.get_surrounding_objects(cells, self.goodie_cells)
+                baddies = self.get_surrounding_objects(cells, self.baddie_cells)
+                character.step(dt, Surrounds(terrain, goodies, baddies))
 
     def get_surrounding_objects(self, cells, cell_dict):
         d = defaultdict(GameObject)

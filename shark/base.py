@@ -25,6 +25,12 @@ def get_resolution(map_shape, object_size=32, overlap=0.125):
     return tuple((dim * cell_size) + offset for dim in map_shape)
 
 
+def convert_to_ones(num):
+    sign = -1 if num < 0 else 1
+    value = 1 if num != 0 else 0
+    return sign * value
+
+
 class Direction(Enum):
     north = 0
     south = 1
