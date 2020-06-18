@@ -69,10 +69,10 @@ class Level:
         self.goal = None
         self.goodies = []
         self.baddies = []
-        self.characters = []
         self.build_game_objects(game_objects)
         self.goodie_cells = self.get_cell_dict(self.goodies)
         self.baddie_cells = self.get_cell_dict(self.baddies)
+        self.characters = self.goodies + self.baddies
 
     def __repr__(self):
         return f"Level(name: {self.name}, shape: {self.shape}, time: {self.time_elapsed:.1f} / {self.time_limit})"
@@ -109,8 +109,6 @@ class Level:
     def classify_object(self, game_object):
         if isinstance(game_object, Goal):
             self.goal = game_object
-        if isinstance(game_object, Character):
-            self.characters.append(game_object)
         if isinstance(game_object, Goodie):
             self.goodies.append(game_object)
         if isinstance(game_object, Hero):
@@ -139,15 +137,19 @@ class Level:
 
     def step(self, dt):
         self.time_elapsed += dt
+        game_over = False
+        won = False
         if self.hero.cell in self.goal:
-            return Result(game_over=True, won=True)
+            game_over = True
+            won = True
         elif self.times_up or not self.hero.is_alive:
-            return Result(game_over=True, won=False)
+            game_over = True
         else:
             self.step_characters(dt)
+            self.check_visibilies()
             self.goodie_cells = self.get_cell_dict(self.goodies)
             self.baddie_cells = self.get_cell_dict(self.baddies)
-        return Result(game_over=False, characters=self.characters)
+        return Result(game_over, won, self.goodies, self.baddies)
 
     def step_characters(self, dt):
         for character in self.characters:
@@ -166,12 +168,16 @@ class Level:
             d[cell] = cell_dict[cell]
         return d
 
+    def check_visibilies(self):
+        for goodie in self.goodies:
+            goodie.is_spotted(self.baddies)
+        for baddie in self.baddies:
+            baddie.is_spotted(self.goodies)
+
 
 class Result:
-    def __init__(self, game_over, won=False, characters=None):
+    def __init__(self, game_over, won, goodies, baddies):
         self.game_over = game_over
         self.won = won
-        self.characters = characters if characters else []
-
-    def __bool__(self):
-        return self.game_over
+        self.goodies = goodies
+        self.baddies = baddies

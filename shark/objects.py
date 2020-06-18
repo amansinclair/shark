@@ -27,6 +27,7 @@ class GameObject:
         self.shape = shape
         self.action = Action.stand
         self.direction = Direction.south
+        self.visible = True
 
     @property
     def cell(self):
@@ -97,7 +98,6 @@ class MoveableObject(GameObject):
 
     def __init__(self, is_on_land=True, **kwargs):
         super().__init__(**kwargs)
-        self.dirty = True
         self.default_action = Action.tread_water
         self.is_on_land = True
         self.clear()
@@ -124,9 +124,7 @@ class MoveableObject(GameObject):
         self.goal_cell = cell
 
     def step(self, dt, surrounds):
-        self.dirty = False
         if self.goal_cell:
-            self.dirty = True
             self.set_stepsize(dt, surrounds.terrain)
             self.move(surrounds)
 
@@ -150,6 +148,7 @@ class MoveableObject(GameObject):
     def choose_next_cell(self, surrounds):
         dx = self.goal_cell.x - self.cell.x
         dy = self.goal_cell.y - self.cell.y
+        print(self, self.goal_cell)
         index = (convert_to_ones(dx), convert_to_ones(dy))
         displacement_prefs = self.displacement_prefs[index]
         self.set_next_cell(displacement_prefs, surrounds)
@@ -200,6 +199,7 @@ class Character(MoveableObject):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.current_health = self.max_health
+        self.is_visible = False
 
     @property
     def is_alive(self):
@@ -213,13 +213,24 @@ class Character(MoveableObject):
         if self.is_alive:
             self.current_health -= damage
             self.action = Action.attacked if self.is_alive else Action.die
-            self.dirty = True
 
     def __lt__(self, character):
         if self.y == character.y:
             return self.x < character.x
         else:
             return self.y < character.y
+
+    def can_see(self, cell):
+        x = abs(self.cell.x - cell.x)
+        y = abs(self.cell.y - cell.y)
+        return bool(x <= self.visible_distance and y <= self.visible_distance)
+
+    def is_spotted(self, spotters):
+        self.is_visible = False
+        for spotter in spotters:
+            if spotter.can_see(self.cell):
+                self.is_visible = True
+                break
 
 
 class Goodie(Character):
@@ -250,7 +261,7 @@ class Shark(Baddie):
         super().__init__(**kwargs)
         self.default_action = Action.swim
         self.action = Action.swim
-        self.previous_cells = deque(maxlen=6)
+        self.previous_cells = deque(maxlen=8)
         self.previous_cells.append(self.cell)
 
     def step(self, dt, surrounds):
@@ -265,7 +276,7 @@ class Shark(Baddie):
                 self.attack(goodie_in_cell, dt)
 
     def attack(self, goodie, dt):
-        print("goodie is", goodie)
+        # print("goodie is", goodie)
         damage = self.damage * dt
         self.action = Action.attack
         # goodie.take_damage(damage)

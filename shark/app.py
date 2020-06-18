@@ -9,9 +9,10 @@ from pathlib import Path
 
 
 class App(pyglet.window.Window):
-    def __init__(self, app_path, H=480, W=480):
+    def __init__(self, app_path, H=480, W=480, show_all=False):
         super().__init__(W, H, fullscreen=False)
         self.app_path = app_path
+        self.show_all = show_all
         self.renderer = Renderer(app_path)
         self.level_loader = LevelLoader(app_path)
         self.current_level_idx = 0
@@ -29,7 +30,7 @@ class App(pyglet.window.Window):
     def start_game(self):
         self.current_level = self.level_loader[self.current_level_idx]
         self.selected_character = self.current_level.hero
-        self.ai = SharkAI(self.current_level.baddies[0])
+        self.ai = SharkAI(self.current_level)
         self.renderer.start_level(self.current_level.terrain)
         self.level_running = True
         pyglet.clock.schedule_interval(self.update_game, 1 / 120.0)
@@ -55,9 +56,15 @@ class App(pyglet.window.Window):
     def update_game(self, dt):
         self.ai.update(self.current_level)
         game_status = self.current_level.step(dt)
-        if game_status:
+        if game_status.game_over:
             self.end_level(game_status)
-        self.objects_to_draw = game_status.characters
+        if self.show_all:
+            visible_baddies = game_status.baddies
+        else:
+            visible_baddies = [
+                baddie for baddie in game_status.baddies if baddie.is_visible
+            ]
+        self.objects_to_draw = game_status.goodies + visible_baddies
 
     def end_level(self, game_status):
         if game_status.won:
