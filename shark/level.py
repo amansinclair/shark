@@ -2,7 +2,7 @@ import math
 import time
 import inspect
 import json
-from collections import namedtuple, defaultdict
+from collections import namedtuple, defaultdict, OrderedDict
 from .objects import (
     Hero,
     Goal,
@@ -30,8 +30,14 @@ class LevelLoader:
         return len(self.level_specs)
 
     def __getitem__(self, idx):
-        level_spec = self.level_specs[idx]
+        if isinstance(idx, int):
+            level_spec = self.level_specs[self.get_key(idx)]
+        elif isinstance(idx, str):
+            level_spec = self.level_specs[idx]
         return self.build_level(level_spec)
+
+    def get_key(self, idx):
+        return list(self.level_specs.keys())[idx]
 
     def __repr__(self):
         return f"LevelLoader({len(self)})"
@@ -46,10 +52,11 @@ class LevelLoader:
         return level_paths
 
     def load_levels(self, level_paths):
-        level_specs = []
+        level_specs = OrderedDict()
         for level_path in level_paths:
             with open(level_path, "r") as level_file:
-                level_specs.append(json.load(level_file))
+                level = json.load(level_file)
+                level_specs[level["name"]] = level
         return level_specs
 
     def build_level(self, level_spec):
@@ -63,6 +70,7 @@ class Level:
         self.shape = shape
         self.time_limit = time_limit
         self.time_elapsed = 0.0
+        self.n_updates = 0
         self.terrain = self.build_terrain(terrain)
         self.terrain_cells = self.get_cell_dict(self.terrain)
         self.hero = None
@@ -73,6 +81,7 @@ class Level:
         self.goodie_cells = self.get_cell_dict(self.goodies)
         self.baddie_cells = self.get_cell_dict(self.baddies)
         self.characters = self.goodies + self.baddies
+        self.log = {"name": name, "events": [], "total_time": 0.0, "n_updates": 0}
 
     def __repr__(self):
         return f"Level(name: {self.name}, shape: {self.shape}, time: {self.time_elapsed:.1f} / {self.time_limit})"
@@ -125,6 +134,7 @@ class Level:
         return bool(self.hero.is_alive and not self.times_up)
 
     def update(self, selected_goodie, cell):
+        self.log["events"].append(["hero", self.time_elapsed, cell.x, cell.y])
         if cell in self.goodie_cells:
             character = self.goodie_cells[cell]
             self.check_for_follow(selected_goodie, character)
@@ -132,6 +142,7 @@ class Level:
             selected_goodie.move_to(cell)
 
     def update_ai(self, cell):
+        self.log["events"].append(["baddie", self.time_elapsed, cell.x, cell.y])
         self.baddies[0].move_to(cell)
 
     def check_for_follow(self, selected_goodie, character):
@@ -139,6 +150,7 @@ class Level:
             pass  # setup following
 
     def step(self, dt):
+        self.n_updates += 1
         self.time_elapsed += dt
         game_over = False
         won = False
@@ -152,6 +164,9 @@ class Level:
             self.check_visibilies()
             self.goodie_cells = self.get_cell_dict(self.goodies)
             self.baddie_cells = self.get_cell_dict(self.baddies)
+        if game_over:
+            self.log["n_updates"] = self.n_updates
+            self.log["total_time"] = self.time_elapsed
         return Result(game_over, won, self.goodies, self.baddies)
 
     def step_characters(self, dt):
@@ -177,10 +192,9 @@ class Level:
         for baddie in self.baddies:
             baddie.is_spotted(self.goodies)
 
+    def save_log(self, path):
+        with open(path, "w") as log_file:
+            json.dump(self.log, log_file)
 
-class Result:
-    def __init__(self, game_over, won, goodies, baddies):
-        self.game_over = game_over
-        self.won = won
-        self.goodies = goodies
-        self.baddies = baddies
+
+Result = namedtuple("Result", "game_over won goodies baddies")

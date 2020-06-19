@@ -213,7 +213,6 @@ class Character(MoveableObject):
         if self.is_alive:
             self.current_health -= damage
             # self.action = Action.attacked if self.is_alive else Action.die
-            print(self.current_health)
 
     def __lt__(self, character):
         if self.y == character.y:
@@ -262,7 +261,7 @@ class Shark(Baddie):
         super().__init__(**kwargs)
         self.default_action = Action.swim
         self.action = Action.swim
-        self.previous_cells = deque(maxlen=8)
+        self.previous_cells = deque(maxlen=6)
         self.previous_cells.append(self.cell)
 
     def step(self, dt, surrounds):
@@ -279,7 +278,6 @@ class Shark(Baddie):
     def choose_next_cell(self, surrounds):
         super().choose_next_cell(surrounds)
         if not self.next_cell:
-            print("STUCK")
             displacement_prefs = list(chain(*self.displacement_prefs.values()))
             self.set_next_cell(displacement_prefs, surrounds)
 

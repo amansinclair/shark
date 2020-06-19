@@ -1,5 +1,4 @@
 import pyglet
-import os
 import math
 from .level import LevelLoader
 from .render import Renderer
@@ -72,6 +71,7 @@ class App(pyglet.window.Window):
             self.current_level_idx += 1
         else:
             print("you lost!")
+        self.current_level.save_log("test.json")
         self.close()
 
     def run(self):

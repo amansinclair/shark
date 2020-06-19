@@ -99,7 +99,6 @@ class SharkAI:
                 break
 
     def get_goodie(self, level):
-        print("CHASSSSSEEEEEEE!!!!!!!!!!!!!!")
         self.chasing = True
         hero_x, hero_y = level.hero.cell
         shark_x, shark_y = self.current_cell
@@ -109,3 +108,19 @@ class SharkAI:
             level.update_ai(Cell(shark_x + dx, shark_y + dy))
         else:
             self.patrol(level)
+
+
+class Lemming:
+    def __init__(self, current_level):
+        self.hero = current_level.hero
+        self.goal = current_level.goal
+        current_level.update(self.hero, self.get_random_cell())
+
+    def get_random_cell(self):
+        row = random.choice([i for i in range(20)])
+        col = random.choice([i for i in range(20)])
+        return Cell(col, row)
+
+    def update(self, level):
+        if not self.hero.is_active:
+            level.update(self.hero, self.goal)
