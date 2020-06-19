@@ -134,7 +134,7 @@ class Level:
         return bool(self.hero.is_alive and not self.times_up)
 
     def update(self, selected_goodie, cell):
-        self.log["events"].append(["hero", self.time_elapsed, cell.x, cell.y])
+        self.log["events"].append(Event("Goodie", 0, self.time_elapsed, cell.x, cell.y))
         if cell in self.goodie_cells:
             character = self.goodie_cells[cell]
             self.check_for_follow(selected_goodie, character)
@@ -142,7 +142,7 @@ class Level:
             selected_goodie.move_to(cell)
 
     def update_ai(self, cell):
-        self.log["events"].append(["baddie", self.time_elapsed, cell.x, cell.y])
+        self.log["events"].append(Event("Baddie", 0, self.time_elapsed, cell.x, cell.y))
         self.baddies[0].move_to(cell)
 
     def check_for_follow(self, selected_goodie, character):
@@ -198,3 +198,4 @@ class Level:
 
 
 Result = namedtuple("Result", "game_over won goodies baddies")
+Event = namedtuple("Event", "character_type index time x y")

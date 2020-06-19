@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 class App(pyglet.window.Window):
-    def __init__(self, app_path, H=480, W=480, show_all=True):
+    def __init__(self, app_path, H=480, W=480, show_all=False):
         super().__init__(W, H, fullscreen=False)
         self.app_path = app_path
         self.show_all = show_all
@@ -71,7 +71,7 @@ class App(pyglet.window.Window):
             self.current_level_idx += 1
         else:
             print("you lost!")
-        self.current_level.save_log("test.json")
+        # self.current_level.save_log("test.json")
         self.close()
 
     def run(self):
