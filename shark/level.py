@@ -131,6 +131,9 @@ class Level:
         else:
             selected_goodie.move_to(cell)
 
+    def update_ai(self, cell):
+        self.baddies[0].move_to(cell)
+
     def check_for_follow(self, selected_goodie, character):
         if character != selected_goodie:
             pass  # setup following

@@ -3,6 +3,7 @@ import time
 import inspect
 import importlib
 from collections import deque, namedtuple
+from itertools import chain
 from .base import (
     Cell,
     get_cells_in_block,
@@ -148,7 +149,6 @@ class MoveableObject(GameObject):
     def choose_next_cell(self, surrounds):
         dx = self.goal_cell.x - self.cell.x
         dy = self.goal_cell.y - self.cell.y
-        print(self, self.goal_cell)
         index = (convert_to_ones(dx), convert_to_ones(dy))
         displacement_prefs = self.displacement_prefs[index]
         self.set_next_cell(displacement_prefs, surrounds)
@@ -194,7 +194,7 @@ class Character(MoveableObject):
     """Class that has health and supports movement."""
 
     max_health = 100
-    visible_distance = 2
+    visible_distance = 4
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -212,7 +212,8 @@ class Character(MoveableObject):
     def take_damage(self, damage):
         if self.is_alive:
             self.current_health -= damage
-            self.action = Action.attacked if self.is_alive else Action.die
+            # self.action = Action.attacked if self.is_alive else Action.die
+            print(self.current_health)
 
     def __lt__(self, character):
         if self.y == character.y:
@@ -255,7 +256,7 @@ class Baddie(Character):
 class Shark(Baddie):
     land_speed = 0
     water_speed = 2
-    damage = 10
+    damage = 100
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -275,11 +276,18 @@ class Shark(Baddie):
             if goodie_in_cell:
                 self.attack(goodie_in_cell, dt)
 
+    def choose_next_cell(self, surrounds):
+        super().choose_next_cell(surrounds)
+        if not self.next_cell:
+            print("STUCK")
+            displacement_prefs = list(chain(*self.displacement_prefs.values()))
+            self.set_next_cell(displacement_prefs, surrounds)
+
     def attack(self, goodie, dt):
         # print("goodie is", goodie)
         damage = self.damage * dt
         self.action = Action.attack
-        # goodie.take_damage(damage)
+        goodie.take_damage(damage)
 
     def is_free_cell(self, cell, surrounds):
         # print(surrounds.baddies)

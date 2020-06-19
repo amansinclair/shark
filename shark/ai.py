@@ -7,7 +7,7 @@ from collections import defaultdict
 class Sector:
     def __init__(self):
         self.cells = set()
-        self.n_visited = 0
+        self.n_visited = random.choice([0, 1, 2])
 
     def add(self, cell):
         self.cells.add(cell)
@@ -39,7 +39,7 @@ class SharkAI:
         self.shark = current_level.baddies[0]
         self.current_cell = self.shark.cell
         self.sectors = self.create_sectors(current_level)
-        self.patrolling = True
+        self.chasing = False
 
     def create_sectors(self, current_level):
         sectors = defaultdict(Sector)
@@ -65,27 +65,47 @@ class SharkAI:
     def update(self, level):
         if self.shark.cell != self.current_cell:
             self.update_sectors()
-        hero_in_water = isinstance(level.terrain_cells[level.hero.cell], Water)
-        if hero_in_water and self.shark.goal_cell:
-            print("shit")
-            self.get_goodie(level)
-        else:
+        hero_in_water = self.hero_in_water(level)
+        if self.should_patrol(hero_in_water, self.shark.is_active):
             self.patrol(level)
+        elif self.should_chase(hero_in_water, self.shark.is_active):
+            self.get_goodie(level)
+
+    def hero_in_water(self, level):
+        hero_in_water = isinstance(level.terrain_cells[level.hero.cell], Water)
+        hero_is_visible = self.shark.can_see(level.hero.cell)
+        return hero_in_water and hero_is_visible
+
+    def should_patrol(self, hero_in_water, is_active):
+        if not hero_in_water and self.chasing:
+            return True
+        if not hero_in_water and not is_active and not self.chasing:
+            return True
+        return False
+
+    def should_chase(self, hero_in_water, is_active):
+        if hero_in_water:
+            if not (is_active and self.chasing):
+                return True
+        return False
 
     def patrol(self, level):
+        self.chasing = False
         sectors = list(self.sectors.values())
         for sector in sorted(sectors):
             cell = sector.get_cell()
             if cell not in self.shark.previous_cells:
-                self.shark.move_to(cell)
+                level.update_ai(cell)
                 break
 
     def get_goodie(self, level):
+        print("CHASSSSSEEEEEEE!!!!!!!!!!!!!!")
+        self.chasing = True
         hero_x, hero_y = level.hero.cell
         shark_x, shark_y = self.current_cell
         dx = convert_to_ones(hero_x - shark_x)
         dy = convert_to_ones(hero_y - shark_y)
         if (dx, dy) != (0, 0):
-            self.shark.move_to(Cell(shark_x + dx, shark_y + dy))
+            level.update_ai(Cell(shark_x + dx, shark_y + dy))
         else:
             self.patrol(level)

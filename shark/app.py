@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 class App(pyglet.window.Window):
-    def __init__(self, app_path, H=480, W=480, show_all=False):
+    def __init__(self, app_path, H=480, W=480, show_all=True):
         super().__init__(W, H, fullscreen=False)
         self.app_path = app_path
         self.show_all = show_all
@@ -68,7 +68,11 @@ class App(pyglet.window.Window):
 
     def end_level(self, game_status):
         if game_status.won:
+            print("you won!")
             self.current_level_idx += 1
+        else:
+            print("you lost!")
+        self.close()
 
     def run(self):
         pyglet.app.run()
