@@ -1,6 +1,6 @@
 {
   "name": "Level One",
-  "shape": [20, 20],
+  "shape": [32, 32],
   "time_limit": 300,
   "terrain": [
     ["Land", { "name": "Land", "x": 0, "y": 0 }],
@@ -30,6 +30,7 @@
   "game_objects": [
     ["Goal", { "name": "Goal", "x": 19, "y": 19 }],
     ["Shark", { "name": "Shark", "x": 17, "y": 17 }],
-    ["Hero", { "name": "Hero", "x": 1, "y": 1 }]
+    ["Goodie", { "name": "Goodie", "x": 1, "y": 1 }],
+    ["Goodie", { "name": "Goodie", "x": 2, "y": 2 }]
   ]
 }

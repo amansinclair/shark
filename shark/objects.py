@@ -26,7 +26,7 @@ class GameObject:
         self.x = x
         self.y = y
         self.shape = shape
-        self.action = Action.stand
+        self.action = None
         self.direction = Direction.south
         self.visible = True
 

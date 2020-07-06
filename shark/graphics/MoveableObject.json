@@ -1,78 +1,69 @@
 {
   "filename": "MoveableObject.png",
-  "name": "Hero",
+  "obj_name": "Goodie",
   "n_rows": 10,
   "n_cols": 2,
+  "frames": [],
   "animations": [
     {
-      "action": "swim",
-      "direction": "west",
+      "name": "swim_west",
       "length": 2,
       "loop": true,
-      "dt": 0.5
+      "dt": 0.2
     },
     {
-      "action": "swim",
-      "direction": "east",
+      "name": "swim_east",
       "length": 2,
       "loop": true,
-      "dt": 0.5
+      "dt": 0.2
     },
     {
-      "action": "swim",
-      "direction": "south",
+      "name": "swim_south",
       "length": 2,
       "loop": true,
-      "dt": 0.5
+      "dt": 0.2
     },
     {
-      "action": "swim",
-      "direction": "north",
+      "name": "swim_north",
       "length": 2,
       "loop": true,
-      "dt": 0.5
+      "dt": 0.2
     },
     {
-      "action": "walk",
-      "direction": "west",
+      "name": "walk_west",
       "length": 2,
       "loop": true,
-      "dt": 0.5
+      "dt": 0.2
     },
     {
-      "action": "walk",
-      "direction": "east",
+      "name": "walk_east",
       "length": 2,
       "loop": true,
-      "dt": 0.5
+      "dt": 0.2
     },
     {
-      "action": "walk",
-      "direction": "south",
+      "name": "walk_south",
       "length": 2,
       "loop": true,
-      "dt": 0.5
+      "dt": 0.2
     },
     {
-      "action": "walk",
-      "direction": "north",
+      "name": "walk_north",
       "length": 2,
       "loop": true,
-      "dt": 0.5
+      "dt": 0.2
     },
     {
-      "action": "tread_water",
-      "direction": "south",
+      "name": "tread_water_south",
       "length": 2,
       "loop": true,
-      "dt": 0.5
+      "dt": 0.2
     },
     {
-      "action": "stand",
-      "direction": "south",
+      "name": "stand_south",
       "length": 2,
       "loop": true,
-      "dt": 0.5
+      "dt": 0.2
     }
   ]
 }

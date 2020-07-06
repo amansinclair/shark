@@ -73,7 +73,6 @@ class Level:
         self.n_updates = 0
         self.terrain = self.build_terrain(terrain)
         self.terrain_cells = self.get_cell_dict(self.terrain)
-        self.hero = None
         self.goal = None
         self.goodies = []
         self.baddies = []
@@ -120,8 +119,6 @@ class Level:
             self.goal = game_object
         if isinstance(game_object, Goodie):
             self.goodies.append(game_object)
-        if isinstance(game_object, Hero):
-            self.hero = game_object
         if isinstance(game_object, Baddie):
             self.baddies.append(game_object)
 
@@ -130,8 +127,18 @@ class Level:
         return self.time_elapsed > self.time_limit
 
     @property
+    def someones_alive(self):
+        return any(goodie.is_alive for goodie in self.goodies)
+
+    @property
     def is_completed(self):
-        return bool(self.hero.is_alive and not self.times_up)
+        return bool(self.someones_alive and not self.times_up)
+
+    @property
+    def goodies_in_goal(self):
+        return all(
+            (goodie.cell in self.goal) for goodie in self.goodies if goodie.is_alive
+        )
 
     def update(self, selected_goodie, cell):
         self.log["events"].append(Event("Goodie", 0, self.time_elapsed, cell.x, cell.y))
@@ -154,10 +161,10 @@ class Level:
         self.time_elapsed += dt
         game_over = False
         won = False
-        if self.hero.cell in self.goal:
+        if self.goodies_in_goal:
             game_over = True
             won = True
-        elif self.times_up or not self.hero.is_alive:
+        elif self.times_up or not self.someones_alive:
             game_over = True
         else:
             self.step_characters(dt)

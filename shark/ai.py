@@ -69,12 +69,15 @@ class SharkAI:
         if self.should_patrol(hero_in_water, self.shark.is_active):
             self.patrol(level)
         elif self.should_chase(hero_in_water, self.shark.is_active):
-            self.get_goodie(level)
+            self.get_goodie(hero_in_water, level)
 
     def hero_in_water(self, level):
-        hero_in_water = isinstance(level.terrain_cells[level.hero.cell], Water)
-        hero_is_visible = self.shark.can_see(level.hero.cell)
-        return hero_in_water and hero_is_visible
+        for goodie in level.goodies:
+            hero_in_water = isinstance(level.terrain_cells[goodie.cell], Water)
+            hero_is_visible = self.shark.can_see(goodie.cell)
+            if hero_in_water and hero_is_visible:
+                return goodie
+        return False
 
     def should_patrol(self, hero_in_water, is_active):
         if not hero_in_water and self.chasing:
@@ -98,9 +101,9 @@ class SharkAI:
                 level.update_ai(cell)
                 break
 
-    def get_goodie(self, level):
+    def get_goodie(self, hero, level):
         self.chasing = True
-        hero_x, hero_y = level.hero.cell
+        hero_x, hero_y = hero.cell
         shark_x, shark_y = self.current_cell
         dx = convert_to_ones(hero_x - shark_x)
         dy = convert_to_ones(hero_y - shark_y)

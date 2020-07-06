@@ -1,61 +1,54 @@
 {
   "filename": "Shark.png",
-  "name": "Shark",
+  "obj_name": "Shark",
   "n_rows": 8,
   "n_cols": 2,
+  "frames": [],
   "animations": [
     {
-      "action": "swim",
-      "direction": "west",
+      "name": "swim_west",
       "length": 2,
       "loop": true,
       "dt": 0.5
     },
     {
-      "action": "swim",
-      "direction": "east",
+      "name": "swim_east",
       "length": 2,
       "loop": true,
       "dt": 0.5
     },
     {
-      "action": "swim",
-      "direction": "south",
+      "name": "swim_south",
       "length": 2,
       "loop": true,
       "dt": 0.5
     },
     {
-      "action": "swim",
-      "direction": "north",
+      "name": "swim_north",
       "length": 2,
       "loop": true,
       "dt": 0.5
     },
     {
-      "action": "attack",
-      "direction": "west",
+      "name": "attack_west",
       "length": 2,
       "loop": true,
       "dt": 0.5
     },
     {
-      "action": "attack",
-      "direction": "east",
+      "name": "attack_east",
       "length": 2,
       "loop": true,
       "dt": 0.5
     },
     {
-      "action": "attack",
-      "direction": "south",
+      "name": "attack_south",
       "length": 2,
       "loop": true,
       "dt": 0.5
     },
     {
-      "action": "attack",
-      "direction": "north",
+      "name": "attack_north",
       "length": 2,
       "loop": true,
       "dt": 0.5

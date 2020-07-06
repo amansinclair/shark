@@ -1,7 +1,8 @@
 {
   "filename": "Land.png",
-  "name": "Land",
+  "obj_name": "Land",
   "n_rows": 1,
   "n_cols": 1,
+  "frames": [{ "name": "south" }],
   "animations": []
 }

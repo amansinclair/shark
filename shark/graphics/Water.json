@@ -1,7 +1,8 @@
 {
   "filename": "Water.png",
-  "name": "Water",
+  "obj_name": "Water",
   "n_rows": 1,
   "n_cols": 1,
+  "frames": [{ "name": "south" }],
   "animations": []
 }

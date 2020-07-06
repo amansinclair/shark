@@ -8,27 +8,25 @@ from pathlib import Path
 
 
 class App(pyglet.window.Window):
-    def __init__(self, app_path, H=480, W=480, show_all=False):
+    def __init__(self, app_path, H=896, W=768, show_all=False):
         super().__init__(W, H, fullscreen=False)
+        pyglet.gl.glClearColor(0.1, 0.1, 0.1, 1)
         self.app_path = app_path
         self.show_all = show_all
-        self.renderer = Renderer(app_path)
+        self.hud = HUD(H=128, W=W)
+        self.renderer = Renderer(app_path, self.hud)
         self.level_loader = LevelLoader(app_path)
         self.current_level_idx = 0
         self.current_level = None
-        self.selected_character = None
         self.ai = None
         self.level_running = False
-        self.clicked = self.reset_click()
+        self.clicked = None
         self.objects_to_draw = []
         self.start_game()
 
-    def reset_click(self):
-        return (None, None)
-
     def start_game(self):
         self.current_level = self.level_loader[self.current_level_idx]
-        self.selected_character = self.current_level.hero
+        self.hud.reset(self.current_level.goodies)
         self.ai = SharkAI(self.current_level)
         self.renderer.start_level(self.current_level.terrain)
         self.level_running = True
@@ -36,14 +34,16 @@ class App(pyglet.window.Window):
 
     def on_mouse_press(self, x, y, button, modifiers):
         if button == pyglet.window.mouse.LEFT:
-            x = math.floor(x / 24)
-            y = math.floor(y / 24)
-            self.clicked = Cell(x, y)
+            self.clicked = x, y
 
     def on_mouse_release(self, x, y, button, modifiers):
         if button == pyglet.window.mouse.LEFT:
-            self.current_level.update(self.selected_character, self.clicked)
-            self.clicked = self.reset_click()
+            x, y = self.clicked
+            if not self.hud.was_clicked(x, y):
+                x = math.floor(x / 24)
+                y = math.floor((y - self.hud.H) / 24)
+                self.current_level.update(self.hud.selected_character, Cell(x, y))
+            self.clicked = None
 
     def on_draw(self):
         self.clear()
@@ -79,3 +79,31 @@ class App(pyglet.window.Window):
 
     def __repr__(self):
         return f"Shark(Level: {self.current_level})"
+
+
+class HUD:
+    def __init__(self, H, W, n_cols=6):
+        self.H = H
+        self.W = W
+        self.dx = W // n_cols
+        self.characters = None
+        self.selected_x = None
+
+    def reset(self, characters):
+        self.characters = characters
+        self.selected_x = 0
+        self.selected_character = characters[0]
+
+    def was_clicked(self, x, y):
+        if x < self.W and y < self.H:
+            self.process_click(x, y)
+            return True
+        return False
+
+    def process_click(self, x, y):
+        idx = x // self.dx
+        character = self.characters[idx]
+        if character.is_alive:
+            self.selected_character = character
+            self.selected_x = idx * self.dx
+

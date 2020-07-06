@@ -6,10 +6,6 @@ from .base import Direction, Action
 from .objects import Character
 
 
-def get_key(name, action, direction):
-    return "_".join((str(name), str(action), str(direction)))
-
-
 class ImageLoader:
     def __init__(self, app_path):
         self.folder = app_path / "shark" / "graphics"
@@ -42,25 +38,25 @@ class ImageLoader:
 
     def create_img(self, imgs, specs, img_name):
         img = pyglet.image.load(self.folder / img_name)
-        object_name = specs["name"]
+        object_name = specs["obj_name"]
+        frames = specs["frames"]
         animations = specs["animations"]
         n_rows = int(specs["n_rows"])
         n_cols = int(specs["n_cols"])
         if animations:
             img_grid = pyglet.image.ImageGrid(img, n_rows, n_cols)
             for i, animation in enumerate(animations):
-                action = Action[animation["action"]]
-                direction = Direction[animation["direction"]]
-                key = get_key(object_name, action, direction)
-                imgs[key] = self.extract_img_seq(img_grid, i, animation)
+                key = object_name + "_" + animation["name"]
+                imgs[key] = self.extract_animation(img_grid, i, animation)
+        elif frames:
+            img_grid = pyglet.image.ImageGrid(img, n_rows, n_cols)
+            for i, frame in enumerate(frames):
+                key = object_name + "_" + frame["name"]
+                imgs[key] = img_grid[i]
         else:
-            action = Action.stand
-            direction = Direction.south
-            key = get_key(object_name, action, direction)
-            if key not in imgs.keys():
-                imgs[key] = img
+            imgs[object_name] = img
 
-    def extract_img_seq(self, img_grid, row, animation):
+    def extract_animation(self, img_grid, row, animation):
         length = int(animation["length"])
         loop = animation["loop"]
         dt = float(animation["dt"])
@@ -78,10 +74,13 @@ class ImageLoader:
 
 
 class Renderer:
-    def __init__(self, app_path, cell_size=24):
+    def __init__(self, app_path, hud, cell_size=24):
+        self.hud = hud
+        self.hud_offset = self.hud.H
         self.cell_size = cell_size
         self.offset = cell_size // 2
         self.imgs = ImageLoader(app_path)
+        self.selected = pyglet.sprite.Sprite(img=self.imgs["Selected_box"], x=0, y=0)
 
     def start_level(self, terrain_objects=None):
         self.previous_imgs = {}
@@ -96,15 +95,23 @@ class Renderer:
                 )
 
     def get_img(self, game_object):
-        key = get_key(game_object.name, game_object.action, game_object.direction)
+        key = self.get_key(game_object.name, game_object.direction, game_object.action)
         return self.imgs[key]
+
+    def get_key(self, name, direction=None, action=None):
+        key = str(name)
+        if action:
+            key += "_" + str(action.name)
+        if direction:
+            key += "_" + str(direction.name)
+        return key
 
     def draw(self, game_objects):
         self.bg.draw()
         for game_object in game_objects:  # sort
             sprite = self.get_sprite(game_object)
             sprite.draw()
-        # self.hud.draw() LATER
+        self.draw_hud()
 
     def get_sprite(self, game_object):
         img = self.get_img(game_object)
@@ -133,13 +140,22 @@ class Renderer:
         if isinstance(game_object, Character):
             return (self.convert_character_x(x), self.convert_character_y(y))
         else:
-            return (self.convert_terrain_coord(x), self.convert_terrain_coord(y))
+            return (self.convert_terrain_coord_x(x), self.convert_terrain_coord_y(y))
 
     def convert_character_x(self, x):
         return int((x + 0.5) * self.cell_size) - 16
 
     def convert_character_y(self, y):
-        return int((y * self.cell_size)) + 8
+        return int((y * self.cell_size)) + 8 + self.hud_offset
 
-    def convert_terrain_coord(self, x):
+    def convert_terrain_coord_x(self, x):
         return int(x * self.cell_size)
+
+    def convert_terrain_coord_y(self, y):
+        return int(y * self.cell_size) + self.hud_offset
+
+    def draw_hud(self):
+        x = self.hud.selected_x
+        self.selected.x = x
+        self.selected.draw()
+

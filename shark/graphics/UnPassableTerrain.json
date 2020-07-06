@@ -1,7 +1,8 @@
 {
   "filename": "UnPassableTerrain.png",
-  "name": "UnPassableTerrain",
+  "obj_name": "UnPassableTerrain",
   "n_rows": 1,
   "n_cols": 1,
+  "frames": [{ "name": "south" }],
   "animations": []
 }
