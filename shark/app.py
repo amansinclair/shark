@@ -28,7 +28,9 @@ class App(pyglet.window.Window):
     def start_game(self):
         self.current_level = self.level_loader[self.current_level_idx]
         self.renderer.hud.reset(
-            self.current_level.goodies, self.current_level.time_limit
+            self.current_level.goodies,
+            self.current_level.name,
+            self.current_level.time_limit,
         )
         self.ai = SharkAI(self.current_level)
         self.renderer.start_level(self.current_level.terrain)

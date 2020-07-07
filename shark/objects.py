@@ -238,7 +238,10 @@ class Goodie(Character):
 
     def is_free_cell(self, cell, surrounds):
         is_unpassable = isinstance(surrounds.terrain[cell], UnPassableTerrain)
-        is_occupied = isinstance(surrounds.goodies[cell], Goodie)
+        is_occupied = (
+            isinstance(surrounds.goodies[cell], Goodie)
+            and surrounds.goodies[cell].is_alive
+        )
         if is_unpassable or is_occupied:
             return False
         return True

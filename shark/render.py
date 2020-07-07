@@ -161,7 +161,7 @@ class HUD:
         self.W = W
         self.dx = W // n_cols
 
-    def reset(self, characters, timelimit):
+    def reset(self, characters, levelname, timelimit):
         self.characters = characters
         self.selected_character = characters[0]
         self.top_batch = pyglet.graphics.Batch()
@@ -169,8 +169,16 @@ class HUD:
         self.bottom_batch = pyglet.graphics.Batch()
         self.batches = [self.bottom_batch, self.middle_batch, self.top_batch]
         self.create_sprites()
+        self.levelname = pyglet.text.Label(
+            str(levelname), font_size=18, x=544, y=100, batch=self.top_batch
+        )
         self.time = pyglet.text.Label(
-            str(timelimit), font_size=36, x=544, y=32, batch=self.top_batch
+            str(timelimit),
+            font_size=36,
+            x=600,
+            y=32,
+            align="right",
+            batch=self.top_batch,
         )
         self.selected_box = pyglet.shapes.Rectangle(
             0, 0, 128, 128, color=(255, 255, 255), batch=self.bottom_batch
@@ -209,7 +217,8 @@ class HUD:
 
     def draw(self, game_objects, time_remaining):
         self.time.text = str(time_remaining)
-        self.health_bars[0].color = random.choice([(0, 0, 0), (0, 255, 33)])
-        self.health_bars[0].width = random.choice([112, 50])
+        for i, character in enumerate(self.characters):
+            width = int(112 * character.current_health / character.max_health)
+            self.health_bars[i].width = width
         for batch in self.batches:
             batch.draw()

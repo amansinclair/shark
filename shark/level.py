@@ -136,9 +136,7 @@ class Level:
 
     @property
     def goodies_in_goal(self):
-        return all(
-            (goodie.cell in self.goal) for goodie in self.goodies if goodie.is_alive
-        )
+        return all((goodie.cell in self.goal) for goodie in self.goodies)
 
     def update(self, selected_goodie, cell):
         self.log["events"].append(Event("Goodie", 0, self.time_elapsed, cell.x, cell.y))
