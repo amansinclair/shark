@@ -1,7 +1,7 @@
 {
-  "filename": "Shark.png",
-  "obj_name": "Shark",
-  "n_rows": 8,
+  "filename": "Red.png",
+  "obj_name": "Red",
+  "n_rows": 10,
   "n_cols": 2,
   "frames": [],
   "animations": [
@@ -30,25 +30,37 @@
       "dt": 0.2
     },
     {
-      "name": "attack_west",
+      "name": "walk_west",
       "length": 2,
       "loop": true,
       "dt": 0.2
     },
     {
-      "name": "attack_east",
+      "name": "walk_east",
       "length": 2,
       "loop": true,
       "dt": 0.2
     },
     {
-      "name": "attack_south",
+      "name": "walk_south",
       "length": 2,
       "loop": true,
       "dt": 0.2
     },
     {
-      "name": "attack_north",
+      "name": "walk_north",
+      "length": 2,
+      "loop": true,
+      "dt": 0.2
+    },
+    {
+      "name": "tread_water_south",
+      "length": 2,
+      "loop": true,
+      "dt": 0.2
+    },
+    {
+      "name": "stand_south",
       "length": 2,
       "loop": true,
       "dt": 0.2

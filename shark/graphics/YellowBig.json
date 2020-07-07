@@ -1,0 +1,8 @@
+{
+  "filename": "YellowBig.png",
+  "obj_name": "YellowBig",
+  "n_rows": 1,
+  "n_cols": 2,
+  "frames": [{ "name": "alive" }, { "name": "dead" }],
+  "animations": []
+}

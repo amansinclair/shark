@@ -65,29 +65,31 @@ class SharkAI:
     def update(self, level):
         if self.shark.cell != self.current_cell:
             self.update_sectors()
-        hero_in_water = self.hero_in_water(level)
-        if self.should_patrol(hero_in_water, self.shark.is_active):
+        goodie_in_water = self.goodie_in_water(level)
+        if self.should_patrol(goodie_in_water, self.shark.is_active):
+            print("PATROL")
             self.patrol(level)
-        elif self.should_chase(hero_in_water, self.shark.is_active):
-            self.get_goodie(hero_in_water, level)
+        elif self.should_chase(goodie_in_water, self.shark.is_active):
+            print("CHASE")
+            self.get_goodie(goodie_in_water, level)
 
-    def hero_in_water(self, level):
+    def goodie_in_water(self, level):
         for goodie in level.goodies:
-            hero_in_water = isinstance(level.terrain_cells[goodie.cell], Water)
-            hero_is_visible = self.shark.can_see(goodie.cell)
-            if hero_in_water and hero_is_visible:
+            goodie_in_water = isinstance(level.terrain_cells[goodie.cell], Water)
+            goodie_is_visible = True  # self.shark.can_see(goodie.cell)
+            if goodie_in_water and goodie_is_visible and goodie.is_alive:
                 return goodie
         return False
 
-    def should_patrol(self, hero_in_water, is_active):
-        if not hero_in_water and self.chasing:
+    def should_patrol(self, goodie_in_water, is_active):
+        if not goodie_in_water and self.chasing:
             return True
-        if not hero_in_water and not is_active and not self.chasing:
+        if not goodie_in_water and not is_active and not self.chasing:
             return True
         return False
 
-    def should_chase(self, hero_in_water, is_active):
-        if hero_in_water:
+    def should_chase(self, goodie_in_water, is_active):
+        if goodie_in_water:
             if not (is_active and self.chasing):
                 return True
         return False
@@ -108,8 +110,10 @@ class SharkAI:
         dx = convert_to_ones(hero_x - shark_x)
         dy = convert_to_ones(hero_y - shark_y)
         if (dx, dy) != (0, 0):
+            print(dx, dy)
             level.update_ai(Cell(shark_x + dx, shark_y + dy))
         else:
+            print("zeros")
             self.patrol(level)
 
 

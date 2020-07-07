@@ -278,6 +278,7 @@ class Shark(Baddie):
     def choose_next_cell(self, surrounds):
         super().choose_next_cell(surrounds)
         if not self.next_cell:
+            # print("no cell available")
             displacement_prefs = list(chain(*self.displacement_prefs.values()))
             self.set_next_cell(displacement_prefs, surrounds)
 

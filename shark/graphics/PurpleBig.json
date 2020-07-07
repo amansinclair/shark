@@ -1,0 +1,8 @@
+{
+  "filename": "PurpleBig.png",
+  "obj_name": "PurpleBig",
+  "n_rows": 1,
+  "n_cols": 2,
+  "frames": [{ "name": "alive" }, { "name": "dead" }],
+  "animations": []
+}

@@ -1,0 +1,8 @@
+{
+  "filename": "OrangeBig.png",
+  "obj_name": "OrangeBig",
+  "n_rows": 1,
+  "n_cols": 2,
+  "frames": [{ "name": "alive" }, { "name": "dead" }],
+  "animations": []
+}

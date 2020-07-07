@@ -73,7 +73,7 @@ class Level:
         self.n_updates = 0
         self.terrain = self.build_terrain(terrain)
         self.terrain_cells = self.get_cell_dict(self.terrain)
-        self.goal = None
+        self.goal = set()
         self.goodies = []
         self.baddies = []
         self.build_game_objects(game_objects)
@@ -116,7 +116,7 @@ class Level:
 
     def classify_object(self, game_object):
         if isinstance(game_object, Goal):
-            self.goal = game_object
+            self.goal.add(game_object.cell)
         if isinstance(game_object, Goodie):
             self.goodies.append(game_object)
         if isinstance(game_object, Baddie):

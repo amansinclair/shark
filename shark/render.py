@@ -4,6 +4,7 @@ from pathlib import Path
 from collections import defaultdict
 from .base import Direction, Action
 from .objects import Character
+import random
 
 
 class ImageLoader:
@@ -74,13 +75,11 @@ class ImageLoader:
 
 
 class Renderer:
-    def __init__(self, app_path, hud, cell_size=24):
-        self.hud = hud
-        self.hud_offset = self.hud.H
+    def __init__(self, app_path, hud_height, hud_width, hud_cols, cell_size=24):
         self.cell_size = cell_size
         self.offset = cell_size // 2
         self.imgs = ImageLoader(app_path)
-        self.selected = pyglet.sprite.Sprite(img=self.imgs["Selected_box"], x=0, y=0)
+        self.hud = HUD(self.imgs, hud_height, hud_width, n_cols=hud_cols)
 
     def start_level(self, terrain_objects=None):
         self.previous_imgs = {}
@@ -106,12 +105,12 @@ class Renderer:
             key += "_" + str(direction.name)
         return key
 
-    def draw(self, game_objects):
+    def draw(self, game_objects, time_remaining):
         self.bg.draw()
         for game_object in game_objects:  # sort
             sprite = self.get_sprite(game_object)
             sprite.draw()
-        self.draw_hud()
+        self.hud.draw(game_objects, time_remaining)
 
     def get_sprite(self, game_object):
         img = self.get_img(game_object)
@@ -146,16 +145,71 @@ class Renderer:
         return int((x + 0.5) * self.cell_size) - 16
 
     def convert_character_y(self, y):
-        return int((y * self.cell_size)) + 8 + self.hud_offset
+        return int((y * self.cell_size)) + 8 + self.hud.H
 
     def convert_terrain_coord_x(self, x):
         return int(x * self.cell_size)
 
     def convert_terrain_coord_y(self, y):
-        return int(y * self.cell_size) + self.hud_offset
+        return int(y * self.cell_size) + self.hud.H
 
-    def draw_hud(self):
-        x = self.hud.selected_x
-        self.selected.x = x
-        self.selected.draw()
 
+class HUD:
+    def __init__(self, imgs, H, W, n_cols=6):
+        self.imgs = imgs
+        self.H = H
+        self.W = W
+        self.dx = W // n_cols
+
+    def reset(self, characters, timelimit):
+        self.characters = characters
+        self.selected_character = characters[0]
+        self.top_batch = pyglet.graphics.Batch()
+        self.middle_batch = pyglet.graphics.Batch()
+        self.bottom_batch = pyglet.graphics.Batch()
+        self.batches = [self.bottom_batch, self.middle_batch, self.top_batch]
+        self.create_sprites()
+        self.time = pyglet.text.Label(
+            str(timelimit), font_size=36, x=544, y=32, batch=self.top_batch
+        )
+        self.selected_box = pyglet.shapes.Rectangle(
+            0, 0, 128, 128, color=(255, 255, 255), batch=self.bottom_batch
+        )
+
+    def create_sprites(self):
+        self.face_sprites = []
+        self.health_bars = []
+        x = 0
+        for character in self.characters:
+            key = character.name + "Big" + "_" + "alive"
+            self.face_sprites.append(
+                pyglet.sprite.Sprite(
+                    img=self.imgs[key], x=x, y=0, batch=self.middle_batch
+                )
+            )
+            self.health_bars.append(
+                pyglet.shapes.Rectangle(
+                    x + 8, 110, 112, 10, color=(0, 255, 33), batch=self.top_batch
+                )
+            )
+            x += self.dx
+
+    def was_clicked(self, x, y):
+        if x < self.W and y < self.H:
+            self.process_click(x, y)
+            return True
+        return False
+
+    def process_click(self, x, y):
+        idx = x // self.dx
+        character = self.characters[idx]
+        if character.is_alive:
+            self.selected_character = character
+            self.selected_box.x = idx * self.dx
+
+    def draw(self, game_objects, time_remaining):
+        self.time.text = str(time_remaining)
+        self.health_bars[0].color = random.choice([(0, 0, 0), (0, 255, 33)])
+        self.health_bars[0].width = random.choice([112, 50])
+        for batch in self.batches:
+            batch.draw()
