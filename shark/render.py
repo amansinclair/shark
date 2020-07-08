@@ -81,7 +81,8 @@ class Renderer:
         self.imgs = ImageLoader(app_path)
         self.hud = HUD(self.imgs, hud_height, hud_width, n_cols=hud_cols)
 
-    def start_level(self, terrain_objects=None):
+    def start_level(self, level):
+        terrain_objects = level.terrain
         self.previous_imgs = {}
         self.sprites = {}
         self.bg = pyglet.graphics.Batch()
@@ -92,6 +93,7 @@ class Renderer:
                 self.sprites[terrain_object] = pyglet.sprite.Sprite(
                     img=img, x=x, y=y, batch=self.bg
                 )
+        self.hud.reset(level)
 
     def get_img(self, game_object):
         key = self.get_key(game_object.name, game_object.direction, game_object.action)
@@ -161,19 +163,19 @@ class HUD:
         self.W = W
         self.dx = W // n_cols
 
-    def reset(self, characters, levelname, timelimit):
-        self.characters = characters
-        self.selected_character = characters[0]
+    def reset(self, level):
+        self.characters = level.goodies
+        self.selected_character = self.characters[0]
         self.top_batch = pyglet.graphics.Batch()
         self.middle_batch = pyglet.graphics.Batch()
         self.bottom_batch = pyglet.graphics.Batch()
         self.batches = [self.bottom_batch, self.middle_batch, self.top_batch]
         self.create_sprites()
         self.levelname = pyglet.text.Label(
-            str(levelname), font_size=18, x=544, y=100, batch=self.top_batch
+            str(level.name), font_size=18, x=544, y=100, batch=self.top_batch
         )
         self.time = pyglet.text.Label(
-            str(timelimit),
+            str(level.time_limit),
             font_size=36,
             x=600,
             y=32,

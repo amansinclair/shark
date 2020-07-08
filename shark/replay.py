@@ -8,12 +8,12 @@ from pathlib import Path
 
 
 class Replayer(pyglet.window.Window):
-    def __init__(self, app_path, log_file, speed=3, H=480, W=480):
+    def __init__(self, app_path, log_file, speed=2, H=896, W=768):
         super().__init__(W, H, fullscreen=False)
         self.app_path = app_path
         self.speed = speed
         self.level_loader = LevelLoader(app_path)
-        self.renderer = Renderer(app_path)
+        self.renderer = Renderer(app_path, H, W, 6)
         self.log = self.load_log(log_file)
         self.objects_to_draw = []
         self.start_level()
@@ -29,7 +29,7 @@ class Replayer(pyglet.window.Window):
         self.events = deque(Event(*args) for args in self.log["events"])
         self.current_time = 0.0
         self.next_event = self.events.popleft()
-        self.renderer.start_level(self.level.terrain)
+        self.renderer.start_level(self.level)
         dt = self.log["total_time"] / self.log["n_updates"]
         pyglet.clock.schedule_interval(self.update, dt)
 
@@ -47,14 +47,14 @@ class Replayer(pyglet.window.Window):
 
     def run_event(self):
         cell = Cell(self.next_event.x, self.next_event.y)
-        if self.next_event.character_type == "Baddie":
-            self.level.update_ai(cell)
-        else:
-            self.level.update(self.level.goodies[0], cell)
+        character = self.level.characters[self.next_event.character_index]
+        self.level.update(character, cell)
 
     def on_draw(self):
         self.clear()
-        self.renderer.draw(self.objects_to_draw)
+        self.renderer.draw(
+            self.objects_to_draw, int(self.level.time_limit - self.current_time)
+        )
 
 
 if __name__ == "__main__":

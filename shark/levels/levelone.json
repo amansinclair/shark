@@ -1,7 +1,7 @@
 {
   "name": "Level One",
   "shape": [32, 32],
-  "time_limit": 120,
+  "time_limit": 150,
   "terrain": [
     ["Land", { "name": "Land", "x": 0, "y": 0 }],
     ["Land", { "name": "Land", "x": 1, "y": 0 }],

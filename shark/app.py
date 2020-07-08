@@ -3,12 +3,13 @@ import math
 from .level import LevelLoader
 from .render import Renderer
 from .base import Cell
-from .ai import SharkAI
+from .ai import SharkBaseline
+from .env import SharkEnvPlay
 from pathlib import Path
 
 
 class App(pyglet.window.Window):
-    def __init__(self, app_path, H=896, W=768, show_all=True):
+    def __init__(self, app_path, H=896, W=768, show_all=False):
         super().__init__(W, H, fullscreen=False)
         pyglet.gl.glClearColor(0.1, 0.1, 0.1, 1)
         self.cell_size = 24
@@ -19,7 +20,8 @@ class App(pyglet.window.Window):
         self.current_level_idx = 0
         self.current_level = None
         self.time_remaining = 0
-        self.ai = None
+        self.env = SharkEnvPlay()
+        self.ai = SharkBaseline()
         self.level_running = False
         self.clicked = None
         self.objects_to_draw = []
@@ -27,13 +29,9 @@ class App(pyglet.window.Window):
 
     def start_game(self):
         self.current_level = self.level_loader[self.current_level_idx]
-        self.renderer.hud.reset(
-            self.current_level.goodies,
-            self.current_level.name,
-            self.current_level.time_limit,
-        )
-        self.ai = SharkAI(self.current_level)
-        self.renderer.start_level(self.current_level.terrain)
+        obs = self.env.reset(self.current_level)
+        self.ai.reset(obs)
+        self.renderer.start_level(self.current_level)
         self.level_running = True
         self.time_remaining = self.current_level.time_limit
         pyglet.clock.schedule_interval(self.update_game, 1 / 120.0)
@@ -61,7 +59,10 @@ class App(pyglet.window.Window):
         self.close()
 
     def update_game(self, dt):
-        self.ai.update(self.current_level)
+        obs = self.env.get_obs()
+        if obs.any():
+            action = self.ai.step(obs)
+            self.env.step(action)
         game_status = self.current_level.step(dt)
         if game_status.game_over:
             self.end_level(game_status)

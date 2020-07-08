@@ -83,8 +83,8 @@ class Goal(GameObject):
 class MoveableObject(GameObject):
     """Class that supports movement."""
 
-    water_speed = 1
-    land_speed = 2
+    water_speed = 1.5
+    land_speed = 3
     angle = math.cos(math.pi / 4)
     displacement_prefs = {
         (1, 0): [(1, 0), (1, 1), (1, -1)],
@@ -257,7 +257,7 @@ class Baddie(Character):
 
 class Shark(Baddie):
     land_speed = 0
-    water_speed = 2
+    water_speed = 3
     damage = 100
 
     def __init__(self, **kwargs):
@@ -281,7 +281,11 @@ class Shark(Baddie):
     def choose_next_cell(self, surrounds):
         super().choose_next_cell(surrounds)
         if not self.next_cell:
-            # print("no cell available")
+            print(
+                "no cell available",
+                self.previous_cells,
+                surrounds.terrain[self.goal_cell],
+            )
             displacement_prefs = list(chain(*self.displacement_prefs.values()))
             self.set_next_cell(displacement_prefs, surrounds)
 
@@ -292,14 +296,10 @@ class Shark(Baddie):
         goodie.take_damage(damage)
 
     def is_free_cell(self, cell, surrounds):
-        # print(surrounds.baddies)
         is_land = isinstance(surrounds.terrain[cell], Land)
         have_visited = cell in self.previous_cells
         is_occupied = isinstance(surrounds.baddies[cell], Baddie)
-        # print(is_land, have_visited, is_occupied)
-        if is_land or have_visited or is_occupied:
-            return False
-        return True
+        return not any((is_land, have_visited, is_occupied))
 
 
 all_classes = inspect.getmembers(importlib.import_module(__name__), inspect.isclass)
