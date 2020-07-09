@@ -8,7 +8,16 @@ import numpy as np
 class SharkEnvPlay:
     def __init__(self, n_layers=2):
         self.n_layers = 2
-        self.movements = {0: (0, 1), 1: (0, -1), 2: (1, 0), 3: (-1, 0)}
+        self.movements = {
+            0: (0, 1),
+            1: (0, -1),
+            2: (1, 0),
+            3: (-1, 0),
+            4: (1, 1),
+            5: (-1, -1),
+            6: (1, -1),
+            7: (-1, 1),
+        }
 
     def reset(self, level):
         self.current_level = level

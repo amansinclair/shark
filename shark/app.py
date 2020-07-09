@@ -6,6 +6,7 @@ from .base import Cell
 from .ai import SharkBaseline
 from .env import SharkEnvPlay
 from pathlib import Path
+import time
 
 
 class App(pyglet.window.Window):
@@ -34,7 +35,7 @@ class App(pyglet.window.Window):
         self.renderer.start_level(self.current_level)
         self.level_running = True
         self.time_remaining = self.current_level.time_limit
-        pyglet.clock.schedule_interval(self.update_game, 1 / 120.0)
+        pyglet.clock.schedule_interval(self.update_game, 1 / 60.0)
 
     def on_mouse_press(self, x, y, button, modifiers):
         if button == pyglet.window.mouse.LEFT:
@@ -83,7 +84,7 @@ class App(pyglet.window.Window):
             self.current_level_idx += 1
         else:
             print("you lost!")
-        # self.current_level.save_log("test.json")
+        self.current_level.save_log(str(int(time.time())) + ".json")
         self.close()
 
     def run(self):

@@ -13,7 +13,7 @@ class Replayer(pyglet.window.Window):
         self.app_path = app_path
         self.speed = speed
         self.level_loader = LevelLoader(app_path)
-        self.renderer = Renderer(app_path, H, W, 6)
+        self.renderer = Renderer(app_path, 128, W, 6)
         self.log = self.load_log(log_file)
         self.objects_to_draw = []
         self.start_level()
@@ -59,5 +59,8 @@ class Replayer(pyglet.window.Window):
 
 if __name__ == "__main__":
     cwd = Path.cwd()
-    replay = Replayer(cwd, "test.json")
+    replay_files = [
+        file_path for file_path in cwd.iterdir() if file_path.suffix == ".json"
+    ]
+    replay = Replayer(cwd, replay_files[0])
     pyglet.app.run()
