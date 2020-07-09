@@ -89,3 +89,32 @@ class SharkEnvTrain(SharkEnvPlay):
                 self.current_level.time_limit - self.current_level.time_elapsed
             )
         return self.format_state, reward, game_over, info
+
+
+class HumanEnvTrain:
+    def __init__(self):
+        self.n_layers = 2
+        self.movements = {
+            0: (0, 1),
+            1: (0, -1),
+            2: (1, 0),
+            3: (-1, 0),
+            4: (1, 1),
+            5: (-1, -1),
+            6: (1, -1),
+            7: (-1, 1),
+        }
+
+    def reset(self, level):
+        self.current_level = level
+        self.water = np.zeros(self.current_level.shape, dtype="bool")
+        water_cells = [
+            terrain
+            for terrain in self.current_level.terrain
+            if isinstance(terrain, Water)
+        ]
+        for water_cell in water_cells:
+            col, row = water_cell.cell
+            self.water[row, col] = True
+        self.n_layers += len(self.current_level.baddies)
+        return self.format_state()

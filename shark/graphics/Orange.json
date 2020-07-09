@@ -1,10 +1,16 @@
 {
   "filename": "Orange.png",
   "obj_name": "Orange",
-  "n_rows": 10,
+  "n_rows": 11,
   "n_cols": 2,
   "frames": [],
   "animations": [
+    {
+      "name": "die_south",
+      "length": 2,
+      "loop": false,
+      "dt": 0.5
+    },
     {
       "name": "swim_west",
       "length": 2,

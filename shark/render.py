@@ -172,7 +172,7 @@ class HUD:
         self.batches = [self.bottom_batch, self.middle_batch, self.top_batch]
         self.create_sprites()
         self.levelname = pyglet.text.Label(
-            str(level.name), font_size=18, x=544, y=100, batch=self.top_batch
+            str(level.name), font_size=16, x=520, y=100, batch=self.top_batch
         )
         self.time = pyglet.text.Label(
             str(level.time_limit),

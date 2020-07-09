@@ -46,7 +46,7 @@ class SharkBaseline:
 
     def reset(self, state):
         n_sharks = state.shape[0] - self.sharks_idx
-        self.histories = [deque(maxlen=3) for i in range(n_sharks)]
+        self.histories = [deque(maxlen=5) for i in range(n_sharks)]
         self.current_cells = [(-1, -1)] * n_sharks
         _, self.max_y, self.max_x = state.shape
 
@@ -102,26 +102,37 @@ class SharkBaseline:
 
     def get_action(self, idx, shark_cell, actions, water_layer):
         visited_cells = self.histories[idx]
+        action = self.get_action_from_group(
+            shark_cell, actions, visited_cells, water_layer
+        )
+        if action == None:
+            actions = list(self.actions.keys())
+            action = self.get_action_from_group(
+                shark_cell, actions, visited_cells, water_layer
+            )
+        if action == None:
+            action = 0
+        return action
+
+    def get_action_from_group(self, shark_cell, actions, visited_cells, water_layer):
         action = None
         x, y = shark_cell
         for dx, dy in actions:
             row = y + dy
             col = x + dx
-            if (
-                (col, row) not in visited_cells
-                and self.is_valid_cell((col, row))
-                and water_layer[row, col]
-            ):
+            if self.is_valid_cell(row, col, visited_cells, water_layer):
                 action = self.actions[(dx, dy)]
                 break
-        if action == None:
-            print("STUCK")
-            action = 0
         return action
 
-    def is_valid_cell(self, cell):
-        x, y = cell
-        x_cond = x >= 0 and x < self.max_x
-        y_cond = y >= 0 and y < self.max_y
-        return x_cond and y_cond
+    def is_valid_cell(self, row, col, visited_cells, water_layer):
+        not_visited = (col, row) not in visited_cells
+        is_on_map = self.is_on_map(row, col)
+        is_water = water_layer[row, col] if is_on_map else False
+        return all((not_visited, is_on_map, is_water))
+
+    def is_on_map(self, row, col):
+        col_cond = col >= 0 and col < self.max_x
+        row_cond = row >= 0 and row < self.max_y
+        return col_cond and row_cond
 
