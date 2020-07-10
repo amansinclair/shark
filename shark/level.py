@@ -127,8 +127,8 @@ class Level:
         return self.time_elapsed > self.time_limit
 
     @property
-    def someones_alive(self):
-        return any(goodie.is_alive for goodie in self.goodies)
+    def someones_dead(self):
+        return any(not goodie.is_alive for goodie in self.goodies)
 
     @property
     def is_completed(self):
@@ -151,7 +151,7 @@ class Level:
         if self.goodies_in_goal:
             game_over = True
             won = True
-        elif self.times_up or not self.someones_alive:
+        elif self.times_up:  # or self.someones_dead:
             game_over = True
         else:
             self.step_characters(dt)

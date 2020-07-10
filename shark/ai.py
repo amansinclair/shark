@@ -45,20 +45,20 @@ class SharkBaseline:
         }
 
     def reset(self, state):
-        n_sharks = state.shape[0] - self.sharks_idx
+        state, info = state
+        n_sharks = info.shape[0] // 3
         self.histories = [deque(maxlen=5) for i in range(n_sharks)]
         self.current_cells = [(-1, -1)] * n_sharks
         _, self.max_y, self.max_x = state.shape
 
     def step(self, state):
+        state, info = state
         action = []
         water_layer = state[self.water_idx]
         human_cells = self.get_cells(state[self.food_idx])
-        shark_cells = [
-            self.get_cells(shark_layer) for shark_layer in state[self.sharks_idx :]
-        ]
+        shark_cells = self.get_cells(state[self.sharks_idx])
         for idx, shark_cell in enumerate(shark_cells):
-            shark_cell = shark_cell[0]
+            shark_cell = shark_cell
             old_cell = self.current_cells[idx]
             if shark_cell != old_cell:
                 self.histories[idx].append(old_cell)

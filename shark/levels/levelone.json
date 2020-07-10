@@ -1,7 +1,7 @@
 {
   "name": "The Long Stretch Home",
   "shape": [32, 32],
-  "time_limit": 180,
+  "time_limit": 360,
   "terrain": [
     ["Land", { "name": "Land", "x": 0, "y": 0 }],
     ["Land", { "name": "Land", "x": 1, "y": 0 }],
@@ -41,6 +41,11 @@
     ["Land", { "name": "Land", "x": 11, "y": 14 }],
     ["Land", { "name": "Land", "x": 12, "y": 14 }],
     ["Land", { "name": "Land", "x": 13, "y": 14 }],
+    ["Land", { "name": "Land", "x": 14, "y": 14 }],
+    ["Land", { "name": "Land", "x": 11, "y": 15 }],
+    ["Land", { "name": "Land", "x": 10, "y": 14 }],
+    ["Land", { "name": "Land", "x": 15, "y": 13 }],
+    ["Land", { "name": "Land", "x": 15, "y": 12 }],
     ["Land", { "name": "Land", "x": 12, "y": 31 }],
     ["Land", { "name": "Land", "x": 12, "y": 30 }],
     ["Land", { "name": "Land", "x": 12, "y": 29 }],
@@ -73,7 +78,8 @@
     ["UnPassableTerrain", { "name": "UnPassableTerrain", "x": 25, "y": 26 }],
     ["UnPassableTerrain", { "name": "UnPassableTerrain", "x": 25, "y": 25 }],
     ["UnPassableTerrain", { "name": "UnPassableTerrain", "x": 24, "y": 25 }],
-    ["UnPassableTerrain", { "name": "UnPassableTerrain", "x": 24, "y": 24 }]
+    ["UnPassableTerrain", { "name": "UnPassableTerrain", "x": 24, "y": 24 }],
+    ["UnPassableTerrain", { "name": "UnPassableTerrain", "x": 23, "y": 24 }]
   ],
   "game_objects": [
     ["Goal", { "name": "Goal", "x": 31, "y": 31 }],

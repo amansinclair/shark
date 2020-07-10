@@ -10,7 +10,7 @@ import time
 
 
 class App(pyglet.window.Window):
-    def __init__(self, app_path, H=896, W=768, show_all=False):
+    def __init__(self, app_path, H=920, W=768, show_all=False):
         super().__init__(W, H, fullscreen=False)
         pyglet.gl.glClearColor(0.1, 0.1, 0.1, 1)
         self.cell_size = 24
@@ -61,7 +61,7 @@ class App(pyglet.window.Window):
 
     def update_game(self, dt):
         obs = self.env.get_obs()
-        if obs.any():
+        if obs:
             action = self.ai.step(obs)
             self.env.step(action)
         game_status = self.current_level.step(dt)
@@ -84,7 +84,7 @@ class App(pyglet.window.Window):
             self.current_level_idx += 1
         else:
             print("you lost!")
-        self.current_level.save_log(str(int(time.time())) + ".json")
+        self.current_level.save_log("replay_" + str(int(time.time())) + ".json")
         self.close()
 
     def run(self):

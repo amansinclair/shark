@@ -221,9 +221,11 @@ class Character(MoveableObject):
             return self.y < character.y
 
     def can_see(self, cell):
-        x = abs(self.cell.x - cell.x)
-        y = abs(self.cell.y - cell.y)
-        return bool(x <= self.visible_distance and y <= self.visible_distance)
+        if self.is_alive:
+            x = abs(self.cell.x - cell.x)
+            y = abs(self.cell.y - cell.y)
+            return bool(x <= self.visible_distance and y <= self.visible_distance)
+        return False
 
     def is_spotted(self, spotters):
         self.is_visible = False
